@@ -1,0 +1,5433 @@
+package com.raptor.mcloottable.util
+
+import com.raptor.mcloottable.mcloot.ExactLongRange
+import com.raptor.mcloottable.mcloot.LongRange
+import com.raptor.mcloottable.mcloot.NormalLongRange
+import java.io.BufferedInputStream
+import java.util.ArrayList
+import java.util.HashMap
+import java.util.HashSet
+import java.util.Map
+import java.util.Scanner
+import java.util.Set
+import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+
+import static java.util.Collections.emptyMap
+import static extension java.lang.Character.isDigit
+
+import static extension com.raptor.mcloottable.util.MclootUtils.*
+
+class MinecraftData {
+    
+    static class Properties {
+        public static val HORIZONTAL_FACES = new EnumProperty(#{"north", "south", "east", "west"})
+        public static val ALL_FACES = new EnumProperty(#{"north", "south", "east", "west", "up", "down"})
+        public static val BLOCK_HALF = new EnumProperty(#{"bottom", "top"})
+        public static val DOOR_HALF = new EnumProperty(#{"upper", "lower"})
+        public static val DOOR_HINGE = new EnumProperty(#{"left", "right"})
+        public static val BUTTON_FACE = new EnumProperty(#{"floor", "ceiling", "wall"})
+        public static val INT16 = new IntProperty(0, 15)
+        public static val STAIR_SHAPE = new EnumProperty(#{"inner_left", "outer_left", "outer_right", "inner_right", "straight"})
+        public static val SLAB_TYPE = new EnumProperty(#{"bottom", "double", "top"})
+        public static val AXIS = new EnumProperty(#{"x", "y", "z"})
+        public static val WALL_TYPE = new EnumProperty(#{"none", "low", "tall"})
+        public static val BED_HALF = new EnumProperty(#{"head", "foot"})
+        public static val RAIL_ORIENTATION = new EnumProperty(#{"ascending_east", "east_west", "north_south", "ascending_north", "ascending_west", "ascending_south"})
+        public static val CHEST_SHAPE = new EnumProperty(#{"single", "left", "right"})
+        public static val PISTON_STATUS = new EnumProperty(#{"normal", "sticky"})
+        public static val REDSTONE_WIRE_DIRECTION = new EnumProperty(#{"up", "none", "side"})
+        
+        static val values = {
+            val values = new HashMap<String, Property>
+            for (field : Properties.fields) {
+                if (Property.isAssignableFrom(field.type)) {
+                    values.put(field.name, field.get(null) as Property)
+                }
+            }
+            values.unmodifiableView
+        }
+    }
+    
+    public static val VANILLA_LOOT_TABLES = #{
+        "blocks/acacia_button",
+        "blocks/acacia_door",
+        "blocks/acacia_fence",
+        "blocks/acacia_fence_gate",
+        "blocks/acacia_leaves",
+        "blocks/acacia_log",
+        "blocks/acacia_planks",
+        "blocks/acacia_pressure_plate",
+        "blocks/acacia_sapling",
+        "blocks/acacia_sign",
+        "blocks/acacia_slab",
+        "blocks/acacia_stairs",
+        "blocks/acacia_trapdoor",
+        "blocks/acacia_wood",
+        "blocks/activator_rail",
+        "blocks/allium",
+        "blocks/ancient_debris",
+        "blocks/andesite",
+        "blocks/andesite_slab",
+        "blocks/andesite_stairs",
+        "blocks/andesite_wall",
+        "blocks/anvil",
+        "blocks/attached_melon_stem",
+        "blocks/attached_pumpkin_stem",
+        "blocks/azure_bluet",
+        "blocks/bamboo",
+        "blocks/bamboo_sapling",
+        "blocks/barrel",
+        "blocks/basalt",
+        "blocks/beacon",
+        "blocks/beehive",
+        "blocks/beetroots",
+        "blocks/bee_nest",
+        "blocks/bell",
+        "blocks/birch_button",
+        "blocks/birch_door",
+        "blocks/birch_fence",
+        "blocks/birch_fence_gate",
+        "blocks/birch_leaves",
+        "blocks/birch_log",
+        "blocks/birch_planks",
+        "blocks/birch_pressure_plate",
+        "blocks/birch_sapling",
+        "blocks/birch_sign",
+        "blocks/birch_slab",
+        "blocks/birch_stairs",
+        "blocks/birch_trapdoor",
+        "blocks/birch_wood",
+        "blocks/blackstone",
+        "blocks/blackstone_slab",
+        "blocks/blackstone_stairs",
+        "blocks/blackstone_wall",
+        "blocks/black_banner",
+        "blocks/black_bed",
+        "blocks/black_carpet",
+        "blocks/black_concrete",
+        "blocks/black_concrete_powder",
+        "blocks/black_glazed_terracotta",
+        "blocks/black_shulker_box",
+        "blocks/black_stained_glass",
+        "blocks/black_stained_glass_pane",
+        "blocks/black_terracotta",
+        "blocks/black_wool",
+        "blocks/blast_furnace",
+        "blocks/blue_banner",
+        "blocks/blue_bed",
+        "blocks/blue_carpet",
+        "blocks/blue_concrete",
+        "blocks/blue_concrete_powder",
+        "blocks/blue_glazed_terracotta",
+        "blocks/blue_ice",
+        "blocks/blue_orchid",
+        "blocks/blue_shulker_box",
+        "blocks/blue_stained_glass",
+        "blocks/blue_stained_glass_pane",
+        "blocks/blue_terracotta",
+        "blocks/blue_wool",
+        "blocks/bone_block",
+        "blocks/bookshelf",
+        "blocks/brain_coral",
+        "blocks/brain_coral_block",
+        "blocks/brain_coral_fan",
+        "blocks/brewing_stand",
+        "blocks/bricks",
+        "blocks/brick_slab",
+        "blocks/brick_stairs",
+        "blocks/brick_wall",
+        "blocks/brown_banner",
+        "blocks/brown_bed",
+        "blocks/brown_carpet",
+        "blocks/brown_concrete",
+        "blocks/brown_concrete_powder",
+        "blocks/brown_glazed_terracotta",
+        "blocks/brown_mushroom",
+        "blocks/brown_mushroom_block",
+        "blocks/brown_shulker_box",
+        "blocks/brown_stained_glass",
+        "blocks/brown_stained_glass_pane",
+        "blocks/brown_terracotta",
+        "blocks/brown_wool",
+        "blocks/bubble_coral",
+        "blocks/bubble_coral_block",
+        "blocks/bubble_coral_fan",
+        "blocks/cactus",
+        "blocks/cake",
+        "blocks/campfire",
+        "blocks/carrots",
+        "blocks/cartography_table",
+        "blocks/carved_pumpkin",
+        "blocks/cauldron",
+        "blocks/chest",
+        "blocks/chipped_anvil",
+        "blocks/chiseled_nether_bricks",
+        "blocks/chiseled_polished_blackstone",
+        "blocks/chiseled_quartz_block",
+        "blocks/chiseled_red_sandstone",
+        "blocks/chiseled_sandstone",
+        "blocks/chiseled_stone_bricks",
+        "blocks/chorus_flower",
+        "blocks/chorus_plant",
+        "blocks/clay",
+        "blocks/coal_block",
+        "blocks/coal_ore",
+        "blocks/coarse_dirt",
+        "blocks/cobblestone",
+        "blocks/cobblestone_slab",
+        "blocks/cobblestone_stairs",
+        "blocks/cobblestone_wall",
+        "blocks/cobweb",
+        "blocks/cocoa",
+        "blocks/comparator",
+        "blocks/composter",
+        "blocks/conduit",
+        "blocks/cornflower",
+        "blocks/cracked_nether_bricks",
+        "blocks/cracked_polished_blackstone_bricks",
+        "blocks/cracked_stone_bricks",
+        "blocks/crafting_table",
+        "blocks/creeper_head",
+        "blocks/crimson_button",
+        "blocks/crimson_door",
+        "blocks/crimson_fence",
+        "blocks/crimson_fence_gate",
+        "blocks/crimson_fungus",
+        "blocks/crimson_hyphae",
+        "blocks/crimson_nylium",
+        "blocks/crimson_planks",
+        "blocks/crimson_pressure_plate",
+        "blocks/crimson_roots",
+        "blocks/crimson_sign",
+        "blocks/crimson_slab",
+        "blocks/crimson_stairs",
+        "blocks/crimson_stem",
+        "blocks/crimson_trapdoor",
+        "blocks/crying_obsidian",
+        "blocks/cut_red_sandstone",
+        "blocks/cut_red_sandstone_slab",
+        "blocks/cut_sandstone",
+        "blocks/cut_sandstone_slab",
+        "blocks/cyan_banner",
+        "blocks/cyan_bed",
+        "blocks/cyan_carpet",
+        "blocks/cyan_concrete",
+        "blocks/cyan_concrete_powder",
+        "blocks/cyan_glazed_terracotta",
+        "blocks/cyan_shulker_box",
+        "blocks/cyan_stained_glass",
+        "blocks/cyan_stained_glass_pane",
+        "blocks/cyan_terracotta",
+        "blocks/cyan_wool",
+        "blocks/damaged_anvil",
+        "blocks/dandelion",
+        "blocks/dark_oak_button",
+        "blocks/dark_oak_door",
+        "blocks/dark_oak_fence",
+        "blocks/dark_oak_fence_gate",
+        "blocks/dark_oak_leaves",
+        "blocks/dark_oak_log",
+        "blocks/dark_oak_planks",
+        "blocks/dark_oak_pressure_plate",
+        "blocks/dark_oak_sapling",
+        "blocks/dark_oak_sign",
+        "blocks/dark_oak_slab",
+        "blocks/dark_oak_stairs",
+        "blocks/dark_oak_trapdoor",
+        "blocks/dark_oak_wood",
+        "blocks/dark_prismarine",
+        "blocks/dark_prismarine_slab",
+        "blocks/dark_prismarine_stairs",
+        "blocks/daylight_detector",
+        "blocks/dead_brain_coral",
+        "blocks/dead_brain_coral_block",
+        "blocks/dead_brain_coral_fan",
+        "blocks/dead_bubble_coral",
+        "blocks/dead_bubble_coral_block",
+        "blocks/dead_bubble_coral_fan",
+        "blocks/dead_bush",
+        "blocks/dead_fire_coral",
+        "blocks/dead_fire_coral_block",
+        "blocks/dead_fire_coral_fan",
+        "blocks/dead_horn_coral",
+        "blocks/dead_horn_coral_block",
+        "blocks/dead_horn_coral_fan",
+        "blocks/dead_tube_coral",
+        "blocks/dead_tube_coral_block",
+        "blocks/dead_tube_coral_fan",
+        "blocks/detector_rail",
+        "blocks/diamond_block",
+        "blocks/diamond_ore",
+        "blocks/diorite",
+        "blocks/diorite_slab",
+        "blocks/diorite_stairs",
+        "blocks/diorite_wall",
+        "blocks/dirt",
+        "blocks/dispenser",
+        "blocks/dragon_egg",
+        "blocks/dragon_head",
+        "blocks/dried_kelp_block",
+        "blocks/dropper",
+        "blocks/emerald_block",
+        "blocks/emerald_ore",
+        "blocks/enchanting_table",
+        "blocks/ender_chest",
+        "blocks/end_rod",
+        "blocks/end_stone",
+        "blocks/end_stone_bricks",
+        "blocks/end_stone_brick_slab",
+        "blocks/end_stone_brick_stairs",
+        "blocks/end_stone_brick_wall",
+        "blocks/farmland",
+        "blocks/fern",
+        "blocks/fire",
+        "blocks/fire_coral",
+        "blocks/fire_coral_block",
+        "blocks/fire_coral_fan",
+        "blocks/fletching_table",
+        "blocks/flower_pot",
+        "blocks/frosted_ice",
+        "blocks/furnace",
+        "blocks/gilded_blackstone",
+        "blocks/glass",
+        "blocks/glass_pane",
+        "blocks/glowstone",
+        "blocks/gold_block",
+        "blocks/gold_ore",
+        "blocks/granite",
+        "blocks/granite_slab",
+        "blocks/granite_stairs",
+        "blocks/granite_wall",
+        "blocks/grass",
+        "blocks/grass_block",
+        "blocks/grass_path",
+        "blocks/gravel",
+        "blocks/gray_banner",
+        "blocks/gray_bed",
+        "blocks/gray_carpet",
+        "blocks/gray_concrete",
+        "blocks/gray_concrete_powder",
+        "blocks/gray_glazed_terracotta",
+        "blocks/gray_shulker_box",
+        "blocks/gray_stained_glass",
+        "blocks/gray_stained_glass_pane",
+        "blocks/gray_terracotta",
+        "blocks/gray_wool",
+        "blocks/green_banner",
+        "blocks/green_bed",
+        "blocks/green_carpet",
+        "blocks/green_concrete",
+        "blocks/green_concrete_powder",
+        "blocks/green_glazed_terracotta",
+        "blocks/green_shulker_box",
+        "blocks/green_stained_glass",
+        "blocks/green_stained_glass_pane",
+        "blocks/green_terracotta",
+        "blocks/green_wool",
+        "blocks/grindstone",
+        "blocks/hay_block",
+        "blocks/heavy_weighted_pressure_plate",
+        "blocks/honeycomb_block",
+        "blocks/honey_block",
+        "blocks/hopper",
+        "blocks/horn_coral",
+        "blocks/horn_coral_block",
+        "blocks/horn_coral_fan",
+        "blocks/ice",
+        "blocks/infested_chiseled_stone_bricks",
+        "blocks/infested_cobblestone",
+        "blocks/infested_cracked_stone_bricks",
+        "blocks/infested_mossy_stone_bricks",
+        "blocks/infested_stone",
+        "blocks/infested_stone_bricks",
+        "blocks/iron_bars",
+        "blocks/iron_block",
+        "blocks/iron_door",
+        "blocks/iron_ore",
+        "blocks/iron_trapdoor",
+        "blocks/jack_o_lantern",
+        "blocks/jukebox",
+        "blocks/jungle_button",
+        "blocks/jungle_door",
+        "blocks/jungle_fence",
+        "blocks/jungle_fence_gate",
+        "blocks/jungle_leaves",
+        "blocks/jungle_log",
+        "blocks/jungle_planks",
+        "blocks/jungle_pressure_plate",
+        "blocks/jungle_sapling",
+        "blocks/jungle_sign",
+        "blocks/jungle_slab",
+        "blocks/jungle_stairs",
+        "blocks/jungle_trapdoor",
+        "blocks/jungle_wood",
+        "blocks/kelp",
+        "blocks/kelp_plant",
+        "blocks/ladder",
+        "blocks/lantern",
+        "blocks/lapis_block",
+        "blocks/lapis_ore",
+        "blocks/large_fern",
+        "blocks/lectern",
+        "blocks/lever",
+        "blocks/light_blue_banner",
+        "blocks/light_blue_bed",
+        "blocks/light_blue_carpet",
+        "blocks/light_blue_concrete",
+        "blocks/light_blue_concrete_powder",
+        "blocks/light_blue_glazed_terracotta",
+        "blocks/light_blue_shulker_box",
+        "blocks/light_blue_stained_glass",
+        "blocks/light_blue_stained_glass_pane",
+        "blocks/light_blue_terracotta",
+        "blocks/light_blue_wool",
+        "blocks/light_gray_banner",
+        "blocks/light_gray_bed",
+        "blocks/light_gray_carpet",
+        "blocks/light_gray_concrete",
+        "blocks/light_gray_concrete_powder",
+        "blocks/light_gray_glazed_terracotta",
+        "blocks/light_gray_shulker_box",
+        "blocks/light_gray_stained_glass",
+        "blocks/light_gray_stained_glass_pane",
+        "blocks/light_gray_terracotta",
+        "blocks/light_gray_wool",
+        "blocks/light_weighted_pressure_plate",
+        "blocks/lilac",
+        "blocks/lily_of_the_valley",
+        "blocks/lily_pad",
+        "blocks/lime_banner",
+        "blocks/lime_bed",
+        "blocks/lime_carpet",
+        "blocks/lime_concrete",
+        "blocks/lime_concrete_powder",
+        "blocks/lime_glazed_terracotta",
+        "blocks/lime_shulker_box",
+        "blocks/lime_stained_glass",
+        "blocks/lime_stained_glass_pane",
+        "blocks/lime_terracotta",
+        "blocks/lime_wool",
+        "blocks/lodestone",
+        "blocks/loom",
+        "blocks/magenta_banner",
+        "blocks/magenta_bed",
+        "blocks/magenta_carpet",
+        "blocks/magenta_concrete",
+        "blocks/magenta_concrete_powder",
+        "blocks/magenta_glazed_terracotta",
+        "blocks/magenta_shulker_box",
+        "blocks/magenta_stained_glass",
+        "blocks/magenta_stained_glass_pane",
+        "blocks/magenta_terracotta",
+        "blocks/magenta_wool",
+        "blocks/magma_block",
+        "blocks/melon",
+        "blocks/melon_stem",
+        "blocks/mossy_cobblestone",
+        "blocks/mossy_cobblestone_slab",
+        "blocks/mossy_cobblestone_stairs",
+        "blocks/mossy_cobblestone_wall",
+        "blocks/mossy_stone_bricks",
+        "blocks/mossy_stone_brick_slab",
+        "blocks/mossy_stone_brick_stairs",
+        "blocks/mossy_stone_brick_wall",
+        "blocks/mushroom_stem",
+        "blocks/mycelium",
+        "blocks/netherite_block",
+        "blocks/netherrack",
+        "blocks/nether_bricks",
+        "blocks/nether_brick_fence",
+        "blocks/nether_brick_slab",
+        "blocks/nether_brick_stairs",
+        "blocks/nether_brick_wall",
+        "blocks/nether_gold_ore",
+        "blocks/nether_quartz_ore",
+        "blocks/nether_sprouts",
+        "blocks/nether_wart",
+        "blocks/nether_wart_block",
+        "blocks/note_block",
+        "blocks/oak_button",
+        "blocks/oak_door",
+        "blocks/oak_fence",
+        "blocks/oak_fence_gate",
+        "blocks/oak_leaves",
+        "blocks/oak_log",
+        "blocks/oak_planks",
+        "blocks/oak_pressure_plate",
+        "blocks/oak_sapling",
+        "blocks/oak_sign",
+        "blocks/oak_slab",
+        "blocks/oak_stairs",
+        "blocks/oak_trapdoor",
+        "blocks/oak_wood",
+        "blocks/observer",
+        "blocks/obsidian",
+        "blocks/orange_banner",
+        "blocks/orange_bed",
+        "blocks/orange_carpet",
+        "blocks/orange_concrete",
+        "blocks/orange_concrete_powder",
+        "blocks/orange_glazed_terracotta",
+        "blocks/orange_shulker_box",
+        "blocks/orange_stained_glass",
+        "blocks/orange_stained_glass_pane",
+        "blocks/orange_terracotta",
+        "blocks/orange_tulip",
+        "blocks/orange_wool",
+        "blocks/oxeye_daisy",
+        "blocks/packed_ice",
+        "blocks/peony",
+        "blocks/petrified_oak_slab",
+        "blocks/pink_banner",
+        "blocks/pink_bed",
+        "blocks/pink_carpet",
+        "blocks/pink_concrete",
+        "blocks/pink_concrete_powder",
+        "blocks/pink_glazed_terracotta",
+        "blocks/pink_shulker_box",
+        "blocks/pink_stained_glass",
+        "blocks/pink_stained_glass_pane",
+        "blocks/pink_terracotta",
+        "blocks/pink_tulip",
+        "blocks/pink_wool",
+        "blocks/piston",
+        "blocks/player_head",
+        "blocks/podzol",
+        "blocks/polished_andesite",
+        "blocks/polished_andesite_slab",
+        "blocks/polished_andesite_stairs",
+        "blocks/polished_basalt",
+        "blocks/polished_blackstone",
+        "blocks/polished_blackstone_bricks",
+        "blocks/polished_blackstone_brick_slab",
+        "blocks/polished_blackstone_brick_stairs",
+        "blocks/polished_blackstone_brick_wall",
+        "blocks/polished_blackstone_button",
+        "blocks/polished_blackstone_pressure_plate",
+        "blocks/polished_blackstone_slab",
+        "blocks/polished_blackstone_stairs",
+        "blocks/polished_blackstone_wall",
+        "blocks/polished_diorite",
+        "blocks/polished_diorite_slab",
+        "blocks/polished_diorite_stairs",
+        "blocks/polished_granite",
+        "blocks/polished_granite_slab",
+        "blocks/polished_granite_stairs",
+        "blocks/poppy",
+        "blocks/potatoes",
+        "blocks/potted_acacia_sapling",
+        "blocks/potted_allium",
+        "blocks/potted_azure_bluet",
+        "blocks/potted_bamboo",
+        "blocks/potted_birch_sapling",
+        "blocks/potted_blue_orchid",
+        "blocks/potted_brown_mushroom",
+        "blocks/potted_cactus",
+        "blocks/potted_cornflower",
+        "blocks/potted_crimson_fungus",
+        "blocks/potted_crimson_roots",
+        "blocks/potted_dandelion",
+        "blocks/potted_dark_oak_sapling",
+        "blocks/potted_dead_bush",
+        "blocks/potted_fern",
+        "blocks/potted_jungle_sapling",
+        "blocks/potted_lily_of_the_valley",
+        "blocks/potted_oak_sapling",
+        "blocks/potted_orange_tulip",
+        "blocks/potted_oxeye_daisy",
+        "blocks/potted_pink_tulip",
+        "blocks/potted_poppy",
+        "blocks/potted_red_mushroom",
+        "blocks/potted_red_tulip",
+        "blocks/potted_spruce_sapling",
+        "blocks/potted_warped_fungus",
+        "blocks/potted_warped_roots",
+        "blocks/potted_white_tulip",
+        "blocks/potted_wither_rose",
+        "blocks/powered_rail",
+        "blocks/prismarine",
+        "blocks/prismarine_bricks",
+        "blocks/prismarine_brick_slab",
+        "blocks/prismarine_brick_stairs",
+        "blocks/prismarine_slab",
+        "blocks/prismarine_stairs",
+        "blocks/prismarine_wall",
+        "blocks/pumpkin",
+        "blocks/pumpkin_stem",
+        "blocks/purple_banner",
+        "blocks/purple_bed",
+        "blocks/purple_carpet",
+        "blocks/purple_concrete",
+        "blocks/purple_concrete_powder",
+        "blocks/purple_glazed_terracotta",
+        "blocks/purple_shulker_box",
+        "blocks/purple_stained_glass",
+        "blocks/purple_stained_glass_pane",
+        "blocks/purple_terracotta",
+        "blocks/purple_wool",
+        "blocks/purpur_block",
+        "blocks/purpur_pillar",
+        "blocks/purpur_slab",
+        "blocks/purpur_stairs",
+        "blocks/quartz_block",
+        "blocks/quartz_bricks",
+        "blocks/quartz_pillar",
+        "blocks/quartz_slab",
+        "blocks/quartz_stairs",
+        "blocks/rail",
+        "blocks/redstone_block",
+        "blocks/redstone_lamp",
+        "blocks/redstone_ore",
+        "blocks/redstone_torch",
+        "blocks/redstone_wire",
+        "blocks/red_banner",
+        "blocks/red_bed",
+        "blocks/red_carpet",
+        "blocks/red_concrete",
+        "blocks/red_concrete_powder",
+        "blocks/red_glazed_terracotta",
+        "blocks/red_mushroom",
+        "blocks/red_mushroom_block",
+        "blocks/red_nether_bricks",
+        "blocks/red_nether_brick_slab",
+        "blocks/red_nether_brick_stairs",
+        "blocks/red_nether_brick_wall",
+        "blocks/red_sand",
+        "blocks/red_sandstone",
+        "blocks/red_sandstone_slab",
+        "blocks/red_sandstone_stairs",
+        "blocks/red_sandstone_wall",
+        "blocks/red_shulker_box",
+        "blocks/red_stained_glass",
+        "blocks/red_stained_glass_pane",
+        "blocks/red_terracotta",
+        "blocks/red_tulip",
+        "blocks/red_wool",
+        "blocks/repeater",
+        "blocks/respawn_anchor",
+        "blocks/rose_bush",
+        "blocks/sand",
+        "blocks/sandstone",
+        "blocks/sandstone_slab",
+        "blocks/sandstone_stairs",
+        "blocks/sandstone_wall",
+        "blocks/scaffolding",
+        "blocks/seagrass",
+        "blocks/sea_lantern",
+        "blocks/sea_pickle",
+        "blocks/shroomlight",
+        "blocks/shulker_box",
+        "blocks/skeleton_skull",
+        "blocks/slime_block",
+        "blocks/smithing_table",
+        "blocks/smoker",
+        "blocks/smooth_quartz",
+        "blocks/smooth_quartz_slab",
+        "blocks/smooth_quartz_stairs",
+        "blocks/smooth_red_sandstone",
+        "blocks/smooth_red_sandstone_slab",
+        "blocks/smooth_red_sandstone_stairs",
+        "blocks/smooth_sandstone",
+        "blocks/smooth_sandstone_slab",
+        "blocks/smooth_sandstone_stairs",
+        "blocks/smooth_stone",
+        "blocks/smooth_stone_slab",
+        "blocks/snow",
+        "blocks/snow_block",
+        "blocks/soul_campfire",
+        "blocks/soul_fire",
+        "blocks/soul_fire_lantern",
+        "blocks/soul_fire_torch",
+        "blocks/soul_sand",
+        "blocks/soul_soil",
+        "blocks/spawner",
+        "blocks/sponge",
+        "blocks/spruce_button",
+        "blocks/spruce_door",
+        "blocks/spruce_fence",
+        "blocks/spruce_fence_gate",
+        "blocks/spruce_leaves",
+        "blocks/spruce_log",
+        "blocks/spruce_planks",
+        "blocks/spruce_pressure_plate",
+        "blocks/spruce_sapling",
+        "blocks/spruce_sign",
+        "blocks/spruce_slab",
+        "blocks/spruce_stairs",
+        "blocks/spruce_trapdoor",
+        "blocks/spruce_wood",
+        "blocks/sticky_piston",
+        "blocks/stone",
+        "blocks/stonecutter",
+        "blocks/stone_bricks",
+        "blocks/stone_brick_slab",
+        "blocks/stone_brick_stairs",
+        "blocks/stone_brick_wall",
+        "blocks/stone_button",
+        "blocks/stone_pressure_plate",
+        "blocks/stone_slab",
+        "blocks/stone_stairs",
+        "blocks/stripped_acacia_log",
+        "blocks/stripped_acacia_wood",
+        "blocks/stripped_birch_log",
+        "blocks/stripped_birch_wood",
+        "blocks/stripped_crimson_hyphae",
+        "blocks/stripped_crimson_stem",
+        "blocks/stripped_dark_oak_log",
+        "blocks/stripped_dark_oak_wood",
+        "blocks/stripped_jungle_log",
+        "blocks/stripped_jungle_wood",
+        "blocks/stripped_oak_log",
+        "blocks/stripped_oak_wood",
+        "blocks/stripped_spruce_log",
+        "blocks/stripped_spruce_wood",
+        "blocks/stripped_warped_hyphae",
+        "blocks/stripped_warped_stem",
+        "blocks/sugar_cane",
+        "blocks/sunflower",
+        "blocks/sweet_berry_bush",
+        "blocks/tall_grass",
+        "blocks/tall_seagrass",
+        "blocks/target",
+        "blocks/terracotta",
+        "blocks/tnt",
+        "blocks/torch",
+        "blocks/trapped_chest",
+        "blocks/tripwire",
+        "blocks/tripwire_hook",
+        "blocks/tube_coral",
+        "blocks/tube_coral_block",
+        "blocks/tube_coral_fan",
+        "blocks/turtle_egg",
+        "blocks/twisting_vines",
+        "blocks/twisting_vines_plant",
+        "blocks/vine",
+        "blocks/warped_button",
+        "blocks/warped_door",
+        "blocks/warped_fence",
+        "blocks/warped_fence_gate",
+        "blocks/warped_fungus",
+        "blocks/warped_hyphae",
+        "blocks/warped_nylium",
+        "blocks/warped_planks",
+        "blocks/warped_pressure_plate",
+        "blocks/warped_roots",
+        "blocks/warped_sign",
+        "blocks/warped_slab",
+        "blocks/warped_stairs",
+        "blocks/warped_stem",
+        "blocks/warped_trapdoor",
+        "blocks/warped_wart_block",
+        "blocks/weeping_vines",
+        "blocks/weeping_vines_plant",
+        "blocks/wet_sponge",
+        "blocks/wheat",
+        "blocks/white_banner",
+        "blocks/white_bed",
+        "blocks/white_carpet",
+        "blocks/white_concrete",
+        "blocks/white_concrete_powder",
+        "blocks/white_glazed_terracotta",
+        "blocks/white_shulker_box",
+        "blocks/white_stained_glass",
+        "blocks/white_stained_glass_pane",
+        "blocks/white_terracotta",
+        "blocks/white_tulip",
+        "blocks/white_wool",
+        "blocks/wither_rose",
+        "blocks/wither_skeleton_skull",
+        "blocks/yellow_banner",
+        "blocks/yellow_bed",
+        "blocks/yellow_carpet",
+        "blocks/yellow_concrete",
+        "blocks/yellow_concrete_powder",
+        "blocks/yellow_glazed_terracotta",
+        "blocks/yellow_shulker_box",
+        "blocks/yellow_stained_glass",
+        "blocks/yellow_stained_glass_pane",
+        "blocks/yellow_terracotta",
+        "blocks/yellow_wool",
+        "blocks/zombie_head",
+        "chests/abandoned_mineshaft",
+        "chests/buried_treasure",
+        "chests/desert_pyramid",
+        "chests/end_city_treasure",
+        "chests/igloo_chest",
+        "chests/jungle_temple",
+        "chests/jungle_temple_dispenser",
+        "chests/nether_bridge",
+        "chests/pillager_outpost",
+        "chests/shipwreck_map",
+        "chests/shipwreck_supply",
+        "chests/shipwreck_treasure",
+        "chests/simple_dungeon",
+        "chests/spawn_bonus_chest",
+        "chests/stronghold_corridor",
+        "chests/stronghold_crossing",
+        "chests/stronghold_library",
+        "chests/underwater_ruin_big",
+        "chests/underwater_ruin_small",
+        "chests/woodland_mansion",
+        "chests/village/village_armorer",
+        "chests/village/village_butcher",
+        "chests/village/village_cartographer",
+        "chests/village/village_desert_house",
+        "chests/village/village_fisher",
+        "chests/village/village_fletcher",
+        "chests/village/village_mason",
+        "chests/village/village_plains_house",
+        "chests/village/village_savanna_house",
+        "chests/village/village_shepherd",
+        "chests/village/village_snowy_house",
+        "chests/village/village_taiga_house",
+        "chests/village/village_tannery",
+        "chests/village/village_temple",
+        "chests/village/village_toolsmith",
+        "chests/village/village_weaponsmith",
+        "entities/armor_stand",
+        "entities/bat",
+        "entities/bee",
+        "entities/blaze",
+        "entities/cat",
+        "entities/cave_spider",
+        "entities/chicken",
+        "entities/cod",
+        "entities/cow",
+        "entities/creeper",
+        "entities/dolphin",
+        "entities/donkey",
+        "entities/drowned",
+        "entities/elder_guardian",
+        "entities/enderman",
+        "entities/endermite",
+        "entities/ender_dragon",
+        "entities/evoker",
+        "entities/fox",
+        "entities/ghast",
+        "entities/giant",
+        "entities/guardian",
+        "entities/hoglin",
+        "entities/horse",
+        "entities/husk",
+        "entities/illusioner",
+        "entities/iron_golem",
+        "entities/llama",
+        "entities/magma_cube",
+        "entities/mooshroom",
+        "entities/mule",
+        "entities/ocelot",
+        "entities/panda",
+        "entities/parrot",
+        "entities/phantom",
+        "entities/pig",
+        "entities/piglin",
+        "entities/pillager",
+        "entities/player",
+        "entities/polar_bear",
+        "entities/pufferfish",
+        "entities/rabbit",
+        "entities/ravager",
+        "entities/salmon",
+        "entities/sheep",
+        "entities/shulker",
+        "entities/silverfish",
+        "entities/skeleton",
+        "entities/skeleton_horse",
+        "entities/slime",
+        "entities/snow_golem",
+        "entities/spider",
+        "entities/squid",
+        "entities/stray",
+        "entities/strider",
+        "entities/trader_llama",
+        "entities/tropical_fish",
+        "entities/turtle",
+        "entities/vex",
+        "entities/villager",
+        "entities/vindicator",
+        "entities/wandering_trader",
+        "entities/witch",
+        "entities/wither",
+        "entities/wither_skeleton",
+        "entities/wolf",
+        "entities/zoglin",
+        "entities/zombie",
+        "entities/zombie_horse",
+        "entities/zombie_villager",
+        "entities/zombified_piglin",
+        "entities/sheep/black",
+        "entities/sheep/blue",
+        "entities/sheep/brown",
+        "entities/sheep/cyan",
+        "entities/sheep/gray",
+        "entities/sheep/green",
+        "entities/sheep/light_blue",
+        "entities/sheep/light_gray",
+        "entities/sheep/lime",
+        "entities/sheep/magenta",
+        "entities/sheep/orange",
+        "entities/sheep/pink",
+        "entities/sheep/purple",
+        "entities/sheep/red",
+        "entities/sheep/white",
+        "entities/sheep/yellow",
+        "gameplay/cat_morning_gift",
+        "gameplay/fishing",
+        "gameplay/piglin_bartering",
+        "gameplay/fishing/fish",
+        "gameplay/fishing/junk",
+        "gameplay/fishing/treasure",
+        "gameplay/hero_of_the_village/armorer_gift",
+        "gameplay/hero_of_the_village/butcher_gift",
+        "gameplay/hero_of_the_village/cartographer_gift",
+        "gameplay/hero_of_the_village/cleric_gift",
+        "gameplay/hero_of_the_village/farmer_gift",
+        "gameplay/hero_of_the_village/fisherman_gift",
+        "gameplay/hero_of_the_village/fletcher_gift",
+        "gameplay/hero_of_the_village/leatherworker_gift",
+        "gameplay/hero_of_the_village/librarian_gift",
+        "gameplay/hero_of_the_village/mason_gift",
+        "gameplay/hero_of_the_village/shepherd_gift",
+        "gameplay/hero_of_the_village/toolsmith_gift",
+        "gameplay/hero_of_the_village/weaponsmith_gift"
+    }
+    
+    def static isVanillaLootTable(String str) { VANILLA_LOOT_TABLES.contains(str) }
+    
+    public static val VANILLA_BLOCK_TAG_STATES = #{
+        "acacia_logs" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "anvil" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "bamboo_plantable_on" -> emptyMap(),
+        "banners" -> emptyMap(),
+        "beacon_base_blocks" -> emptyMap(),
+        "beds" -> #{
+            "part" -> Properties.BED_HALF,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE
+        },
+        "beehives" -> #{
+            "honey_level" -> new IntProperty(/*min:*/ 0, /*max:*/ 5),
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "crops" -> emptyMap(),
+        "bee_growables" -> emptyMap(),
+        "birch_logs" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "wooden_buttons" -> #{
+            "powered" -> BooleanProperty.INSTANCE,
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "buttons" -> #{
+            "powered" -> BooleanProperty.INSTANCE,
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "campfires" -> #{
+            "signal_fire" -> BooleanProperty.INSTANCE,
+            "lit" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "carpets" -> emptyMap(),
+        "climbable" -> emptyMap(),
+        "coral_plants" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "corals" -> emptyMap(),
+        "coral_blocks" -> emptyMap(),
+        "crimson_stems" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "dark_oak_logs" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "wooden_doors" -> emptyMap(),
+        "doors" -> emptyMap(),
+        "dragon_immune" -> emptyMap(),
+        "enderman_holdable" -> emptyMap(),
+        "wooden_fences" -> #{
+            "west" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "east" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE
+        },
+        "fences" -> #{
+            "west" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "east" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE
+        },
+        "fire" -> emptyMap(),
+        "small_flowers" -> emptyMap(),
+        "flowers" -> emptyMap(),
+        "flower_pots" -> emptyMap(),
+        "gold_ores" -> emptyMap(),
+        "guarded_by_piglins" -> emptyMap(),
+        "hoglin_repellents" -> emptyMap(),
+        "ice" -> emptyMap(),
+        "impermeable" -> emptyMap(),
+        "jungle_logs" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "leaves" -> #{
+            "persistent" -> BooleanProperty.INSTANCE,
+            "distance" -> new IntProperty(/*min:*/ 1, /*max:*/ 7)
+        },
+        "warped_stems" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "spruce_logs" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "oak_logs" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "logs_that_burn" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "logs" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "non_flammable_wood" -> emptyMap(),
+        "nylium" -> emptyMap(),
+        "piglin_repellents" -> emptyMap(),
+        "planks" -> emptyMap(),
+        "portals" -> emptyMap(),
+        "rails" -> emptyMap(),
+        "sand" -> emptyMap(),
+        "saplings" -> #{
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "shulker_boxes" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "wall_signs" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "standing_signs" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "signs" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "wooden_slabs" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "type" -> Properties.SLAB_TYPE
+        },
+        "slabs" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "type" -> Properties.SLAB_TYPE
+        },
+        "soul_fire_base_blocks" -> emptyMap(),
+        "soul_speed_blocks" -> emptyMap(),
+        "stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "shape" -> Properties.STAIR_SHAPE,
+            "half" -> Properties.BLOCK_HALF,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "stone_bricks" -> emptyMap(),
+        "strider_warm_blocks" -> #{
+            "level" -> Properties.INT16
+        },
+        "tall_flowers" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "wooden_trapdoors" -> #{
+            "powered" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE
+        },
+        "trapdoors" -> #{
+            "powered" -> BooleanProperty.INSTANCE,
+            "half" -> Properties.BLOCK_HALF,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE
+        },
+        "underwater_bonemeals" -> emptyMap(),
+        "valid_spawn" -> #{
+            "snowy" -> BooleanProperty.INSTANCE
+        },
+        "walls" -> #{
+            "west" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "up" -> BooleanProperty.INSTANCE,
+            "east" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE
+        },
+        "wall_corals" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "wall_post_override" -> emptyMap(),
+        "wart_blocks" -> emptyMap(),
+        "wither_immune" -> emptyMap(),
+        "wither_summon_base_blocks" -> emptyMap(),
+        "wooden_pressure_plates" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "wooden_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "shape" -> Properties.STAIR_SHAPE,
+            "half" -> Properties.BLOCK_HALF,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "wool" -> emptyMap()
+    }
+    
+    def static isVanillaBlockTag(String str) { VANILLA_BLOCK_TAG_STATES.containsKey(str) }
+    
+    public static val VANILLA_ENTITY_TYPE_TAGS = #{
+        "arrows",
+        "beehive_inhabitors",
+        "impact_projectiles",
+        "raiders",
+        "skeletons"
+    }
+
+    def static isVanillaEntityTypeTag(String str) { VANILLA_ENTITY_TYPE_TAGS.contains(str) }
+
+    public static val VANILLA_ITEM_TAGS = #{
+        "acacia_logs",
+        "anvil",
+        "arrows",
+        "banners",
+        "beacon_payment_items",
+        "beds",
+        "birch_logs",
+        "boats",
+        "buttons",
+        "carpets",
+        "coals",
+        "crimson_stems",
+        "dark_oak_logs",
+        "doors",
+        "fences",
+        "fishes",
+        "flowers",
+        "furnace_materials",
+        "gold_ores",
+        "jungle_logs",
+        "leaves",
+        "lectern_books",
+        "logs",
+        "logs_that_burn",
+        "music_discs",
+        "non_flammable_wood",
+        "oak_logs",
+        "piglin_repellents",
+        "planks",
+        "rails",
+        "sand",
+        "saplings",
+        "signs",
+        "slabs",
+        "small_flowers",
+        "soul_fire_base_blocks",
+        "spruce_logs",
+        "stairs",
+        "stone_bricks",
+        "stone_tool_materials",
+        "tall_flowers",
+        "trapdoors",
+        "walls",
+        "warped_stems",
+        "wooden_buttons",
+        "wooden_doors",
+        "wooden_fences",
+        "wooden_pressure_plates",
+        "wooden_slabs",
+        "wooden_stairs",
+        "wooden_trapdoors",
+        "wool"
+    }
+    
+    def static isVanillaItemTag(String str) { VANILLA_ITEM_TAGS.contains(str) }
+    
+    public static val VANILLA_BLOCK_STATES = #{
+        "grass_block" -> #{
+            "snowy" -> BooleanProperty.INSTANCE
+        },
+        "podzol" -> #{
+            "snowy" -> BooleanProperty.INSTANCE
+        },
+        "oak_sapling" -> #{
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "spruce_sapling" -> #{
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "birch_sapling" -> #{
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "jungle_sapling" -> #{
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "acacia_sapling" -> #{
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "dark_oak_sapling" -> #{
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "water" -> #{
+            "level" -> Properties.INT16
+        },
+        "lava" -> #{
+            "level" -> Properties.INT16
+        },
+        "oak_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "spruce_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "birch_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "jungle_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "acacia_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "dark_oak_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_spruce_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_birch_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_jungle_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_acacia_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_dark_oak_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_oak_log" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "oak_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "spruce_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "birch_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "jungle_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "acacia_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "dark_oak_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_oak_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_spruce_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_birch_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_jungle_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_acacia_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_dark_oak_wood" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "oak_leaves" -> #{
+            "distance" -> new IntProperty(/*min:*/ 1, /*max:*/ 7),
+            "persistent" -> BooleanProperty.INSTANCE
+        },
+        "spruce_leaves" -> #{
+            "distance" -> new IntProperty(/*min:*/ 1, /*max:*/ 7),
+            "persistent" -> BooleanProperty.INSTANCE
+        },
+        "birch_leaves" -> #{
+            "distance" -> new IntProperty(/*min:*/ 1, /*max:*/ 7),
+            "persistent" -> BooleanProperty.INSTANCE
+        },
+        "jungle_leaves" -> #{
+            "distance" -> new IntProperty(/*min:*/ 1, /*max:*/ 7),
+            "persistent" -> BooleanProperty.INSTANCE
+        },
+        "acacia_leaves" -> #{
+            "distance" -> new IntProperty(/*min:*/ 1, /*max:*/ 7),
+            "persistent" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_leaves" -> #{
+            "distance" -> new IntProperty(/*min:*/ 1, /*max:*/ 7),
+            "persistent" -> BooleanProperty.INSTANCE
+        },
+        "dispenser" -> #{
+            "facing" -> Properties.ALL_FACES,
+            "triggered" -> BooleanProperty.INSTANCE
+        },
+        "note_block" -> #{
+            "instrument" -> new EnumProperty(#{"harp", "didgeridoo", "bit", "banjo", "snare", "cow_bell", "chime", "flute", "xylophone", "bell", "guitar", "hat", "basedrum", "iron_xylophone", "pling", "bass"}),
+            "note" -> new IntProperty(/*min:*/ 0, /*max:*/ 24),
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "white_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "orange_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "magenta_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "light_blue_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "yellow_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "lime_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "pink_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "gray_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "light_gray_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "cyan_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "purple_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "blue_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "brown_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "green_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "red_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "black_bed" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "occupied" -> BooleanProperty.INSTANCE,
+            "part" -> Properties.BED_HALF
+        },
+        "powered_rail" -> #{
+            "powered" -> BooleanProperty.INSTANCE,
+            "shape" -> Properties.RAIL_ORIENTATION
+        },
+        "detector_rail" -> #{
+            "powered" -> BooleanProperty.INSTANCE,
+            "shape" -> Properties.RAIL_ORIENTATION
+        },
+        "sticky_piston" -> #{
+            "extended" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.ALL_FACES
+        },
+        "tall_seagrass" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "piston" -> #{
+            "extended" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.ALL_FACES
+        },
+        "piston_head" -> #{
+            "facing" -> Properties.ALL_FACES,
+            "short" -> BooleanProperty.INSTANCE,
+            "type" -> Properties.PISTON_STATUS
+        },
+        "moving_piston" -> #{
+            "facing" -> Properties.ALL_FACES,
+            "type" -> Properties.PISTON_STATUS
+        },
+        "tnt" -> #{
+            "unstable" -> BooleanProperty.INSTANCE
+        },
+        "wall_torch" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "fire" -> #{
+            "age" -> Properties.INT16,
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "up" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "oak_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "chest" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "type" -> Properties.CHEST_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "redstone_wire" -> #{
+            "east" -> Properties.REDSTONE_WIRE_DIRECTION,
+            "north" -> Properties.REDSTONE_WIRE_DIRECTION,
+            "power" -> Properties.INT16,
+            "south" -> Properties.REDSTONE_WIRE_DIRECTION,
+            "west" -> Properties.REDSTONE_WIRE_DIRECTION
+        },
+        "wheat" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 7)
+        },
+        "farmland" -> #{
+            "moisture" -> new IntProperty(/*min:*/ 0, /*max:*/ 7)
+        },
+        "furnace" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "lit" -> BooleanProperty.INSTANCE
+        },
+        "oak_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "spruce_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "birch_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "acacia_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "jungle_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "oak_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "ladder" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "rail" -> #{
+            "shape" -> new EnumProperty(#{"north_east", "ascending_east", "south_west", "ascending_west", "ascending_south", "north_west", "east_west", "ascending_north", "north_south", "south_east"})
+        },
+        "cobblestone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "oak_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "spruce_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "birch_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "acacia_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "jungle_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "lever" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "stone_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "iron_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "oak_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "spruce_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "birch_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "jungle_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "acacia_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "redstone_ore" -> #{
+            "lit" -> BooleanProperty.INSTANCE
+        },
+        "redstone_torch" -> #{
+            "lit" -> BooleanProperty.INSTANCE
+        },
+        "redstone_wall_torch" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "lit" -> BooleanProperty.INSTANCE
+        },
+        "stone_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "snow" -> #{
+            "layers" -> new IntProperty(/*min:*/ 1, /*max:*/ 8)
+        },
+        "cactus" -> #{
+            "age" -> Properties.INT16
+        },
+        "sugar_cane" -> #{
+            "age" -> Properties.INT16
+        },
+        "jukebox" -> #{
+            "has_record" -> BooleanProperty.INSTANCE
+        },
+        "oak_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "basalt" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "polished_basalt" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "soul_fire_wall_torch" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "nether_portal" -> #{
+            "axis" -> new EnumProperty(#{"z", "x"})
+        },
+        "carved_pumpkin" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "jack_o_lantern" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "cake" -> #{
+            "bites" -> new IntProperty(/*min:*/ 0, /*max:*/ 6)
+        },
+        "repeater" -> #{
+            "delay" -> new IntProperty(/*min:*/ 1, /*max:*/ 4),
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "locked" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "oak_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "spruce_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "birch_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "jungle_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "acacia_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "brown_mushroom_block" -> #{
+            "down" -> BooleanProperty.INSTANCE,
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "up" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "red_mushroom_block" -> #{
+            "down" -> BooleanProperty.INSTANCE,
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "up" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "mushroom_stem" -> #{
+            "down" -> BooleanProperty.INSTANCE,
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "up" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "iron_bars" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "attached_pumpkin_stem" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "attached_melon_stem" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "pumpkin_stem" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 7)
+        },
+        "melon_stem" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 7)
+        },
+        "vine" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "up" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "oak_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "stone_brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "mycelium" -> #{
+            "snowy" -> BooleanProperty.INSTANCE
+        },
+        "nether_brick_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "nether_brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "nether_wart" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 3)
+        },
+        "brewing_stand" -> #{
+            "has_bottle_0" -> BooleanProperty.INSTANCE,
+            "has_bottle_1" -> BooleanProperty.INSTANCE,
+            "has_bottle_2" -> BooleanProperty.INSTANCE
+        },
+        "cauldron" -> #{
+            "level" -> new IntProperty(/*min:*/ 0, /*max:*/ 3)
+        },
+        "end_portal_frame" -> #{
+            "eye" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "redstone_lamp" -> #{
+            "lit" -> BooleanProperty.INSTANCE
+        },
+        "cocoa" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 2),
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "sandstone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "ender_chest" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "tripwire_hook" -> #{
+            "attached" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "tripwire" -> #{
+            "attached" -> BooleanProperty.INSTANCE,
+            "disarmed" -> BooleanProperty.INSTANCE,
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "spruce_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "birch_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "jungle_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "command_block" -> #{
+            "conditional" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.ALL_FACES
+        },
+        "cobblestone_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "mossy_cobblestone_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "carrots" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 7)
+        },
+        "potatoes" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 7)
+        },
+        "oak_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "spruce_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "birch_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "jungle_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "acacia_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "skeleton_skull" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "skeleton_wall_skull" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "wither_skeleton_skull" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "wither_skeleton_wall_skull" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "zombie_head" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "zombie_wall_head" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "player_head" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "player_wall_head" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "creeper_head" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "creeper_wall_head" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "dragon_head" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "dragon_wall_head" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "anvil" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "chipped_anvil" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "damaged_anvil" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "trapped_chest" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "type" -> Properties.CHEST_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "light_weighted_pressure_plate" -> #{
+            "power" -> Properties.INT16
+        },
+        "heavy_weighted_pressure_plate" -> #{
+            "power" -> Properties.INT16
+        },
+        "comparator" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "mode" -> new EnumProperty(#{"compare", "subtract"}),
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "daylight_detector" -> #{
+            "inverted" -> BooleanProperty.INSTANCE,
+            "power" -> Properties.INT16
+        },
+        "hopper" -> #{
+            "enabled" -> BooleanProperty.INSTANCE,
+            "facing" -> new EnumProperty(#{"east", "down", "north", "west", "south"})
+        },
+        "quartz_pillar" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "quartz_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "activator_rail" -> #{
+            "powered" -> BooleanProperty.INSTANCE,
+            "shape" -> Properties.RAIL_ORIENTATION
+        },
+        "dropper" -> #{
+            "facing" -> Properties.ALL_FACES,
+            "triggered" -> BooleanProperty.INSTANCE
+        },
+        "white_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "orange_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "magenta_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "light_blue_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "yellow_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "lime_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "pink_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "gray_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "light_gray_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "cyan_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "purple_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "blue_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "brown_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "green_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "red_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "black_stained_glass_pane" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "acacia_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "iron_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "prismarine_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "prismarine_brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dark_prismarine_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "prismarine_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "prismarine_brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dark_prismarine_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "hay_block" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "sunflower" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "lilac" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "rose_bush" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "peony" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "tall_grass" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "large_fern" -> #{
+            "half" -> Properties.DOOR_HALF
+        },
+        "white_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "orange_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "magenta_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "light_blue_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "yellow_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "lime_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "pink_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "gray_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "light_gray_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "cyan_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "purple_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "blue_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "brown_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "green_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "red_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "black_banner" -> #{
+            "rotation" -> Properties.INT16
+        },
+        "white_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "orange_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "magenta_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "light_blue_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "yellow_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "lime_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "pink_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "gray_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "light_gray_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "cyan_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "purple_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "blue_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "brown_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "green_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "red_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "black_wall_banner" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "red_sandstone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "oak_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "spruce_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "birch_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "jungle_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "acacia_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "stone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "smooth_stone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "sandstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "cut_sandstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "petrified_oak_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "cobblestone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "stone_brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "nether_brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "quartz_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "red_sandstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "cut_red_sandstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "purpur_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "spruce_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "birch_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "jungle_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "acacia_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "spruce_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "birch_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "jungle_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "acacia_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "spruce_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "birch_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "jungle_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "acacia_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "dark_oak_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "end_rod" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "chorus_plant" -> #{
+            "down" -> BooleanProperty.INSTANCE,
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "up" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "chorus_flower" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 5)
+        },
+        "purpur_pillar" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "purpur_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "beetroots" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 3)
+        },
+        "repeating_command_block" -> #{
+            "conditional" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.ALL_FACES
+        },
+        "chain_command_block" -> #{
+            "conditional" -> BooleanProperty.INSTANCE,
+            "facing" -> Properties.ALL_FACES
+        },
+        "frosted_ice" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 3)
+        },
+        "bone_block" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "observer" -> #{
+            "facing" -> Properties.ALL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "white_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "orange_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "magenta_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "light_blue_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "yellow_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "lime_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "pink_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "gray_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "light_gray_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "cyan_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "purple_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "blue_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "brown_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "green_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "red_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "black_shulker_box" -> #{
+            "facing" -> Properties.ALL_FACES
+        },
+        "white_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "orange_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "magenta_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "light_blue_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "yellow_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "lime_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "pink_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "gray_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "light_gray_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "cyan_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "purple_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "blue_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "brown_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "green_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "red_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "black_glazed_terracotta" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "kelp" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 25)
+        },
+        "turtle_egg" -> #{
+            "eggs" -> new IntProperty(/*min:*/ 1, /*max:*/ 4),
+            "hatch" -> new IntProperty(/*min:*/ 0, /*max:*/ 2)
+        },
+        "dead_tube_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_brain_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_bubble_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_fire_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_horn_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "tube_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "brain_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "bubble_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "fire_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "horn_coral" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_tube_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_brain_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_bubble_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_fire_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_horn_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "tube_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "brain_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "bubble_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "fire_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "horn_coral_fan" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_tube_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_brain_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_bubble_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_fire_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "dead_horn_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "tube_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "brain_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "bubble_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "fire_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "horn_coral_wall_fan" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "sea_pickle" -> #{
+            "pickles" -> new IntProperty(/*min:*/ 1, /*max:*/ 4),
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "conduit" -> #{
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "bamboo" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 1),
+            "leaves" -> new EnumProperty(#{"large", "none", "small"}),
+            "stage" -> new IntProperty(/*min:*/ 0, /*max:*/ 1)
+        },
+        "bubble_column" -> #{
+            "drag" -> BooleanProperty.INSTANCE
+        },
+        "polished_granite_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "smooth_red_sandstone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "mossy_stone_brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_diorite_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "mossy_cobblestone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "end_stone_brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "stone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "smooth_sandstone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "smooth_quartz_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "granite_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "andesite_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "red_nether_brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_andesite_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "diorite_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_granite_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "smooth_red_sandstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "mossy_stone_brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_diorite_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "mossy_cobblestone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "end_stone_brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "smooth_sandstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "smooth_quartz_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "granite_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "andesite_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "red_nether_brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_andesite_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "diorite_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "brick_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "prismarine_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "red_sandstone_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "mossy_stone_brick_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "granite_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "stone_brick_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "nether_brick_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "andesite_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "red_nether_brick_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "sandstone_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "end_stone_brick_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "diorite_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "scaffolding" -> #{
+            "bottom" -> BooleanProperty.INSTANCE,
+            "distance" -> new IntProperty(/*min:*/ 0, /*max:*/ 7),
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "loom" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "barrel" -> #{
+            "facing" -> Properties.ALL_FACES,
+            "open" -> BooleanProperty.INSTANCE
+        },
+        "smoker" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "lit" -> BooleanProperty.INSTANCE
+        },
+        "blast_furnace" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "lit" -> BooleanProperty.INSTANCE
+        },
+        "grindstone" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "lectern" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "has_book" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "stonecutter" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES
+        },
+        "bell" -> #{
+            "attachment" -> new EnumProperty(#{"double_wall", "ceiling", "floor", "single_wall"}),
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "lantern" -> #{
+            "hanging" -> BooleanProperty.INSTANCE
+        },
+        "soul_fire_lantern" -> #{
+            "hanging" -> BooleanProperty.INSTANCE
+        },
+        "campfire" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "lit" -> BooleanProperty.INSTANCE,
+            "signal_fire" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "soul_campfire" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "lit" -> BooleanProperty.INSTANCE,
+            "signal_fire" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "sweet_berry_bush" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 3)
+        },
+        "warped_stem" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_warped_stem" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "warped_hyphae" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_warped_hyphae" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "crimson_stem" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_crimson_stem" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "crimson_hyphae" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "stripped_crimson_hyphae" -> #{
+            "axis" -> Properties.AXIS
+        },
+        "weeping_vines" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 25)
+        },
+        "twisting_vines" -> #{
+            "age" -> new IntProperty(/*min:*/ 0, /*max:*/ 25)
+        },
+        "crimson_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "warped_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "crimson_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "warped_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "crimson_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "warped_fence" -> #{
+            "east" -> BooleanProperty.INSTANCE,
+            "north" -> BooleanProperty.INSTANCE,
+            "south" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> BooleanProperty.INSTANCE
+        },
+        "crimson_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "warped_trapdoor" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "crimson_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "warped_fence_gate" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "in_wall" -> BooleanProperty.INSTANCE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "crimson_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "warped_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "crimson_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "warped_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "crimson_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "warped_door" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.DOOR_HALF,
+            "hinge" -> Properties.DOOR_HINGE,
+            "open" -> BooleanProperty.INSTANCE,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "crimson_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "warped_sign" -> #{
+            "rotation" -> Properties.INT16,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "crimson_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "warped_wall_sign" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "structure_block" -> #{
+            "mode" -> new EnumProperty(#{"data", "save", "corner", "load"})
+        },
+        "jigsaw" -> #{
+            "orientation" -> new EnumProperty(#{"down_south", "down_west", "up_north", "down_north", "down_east", "west_up", "up_south", "east_up", "north_up", "south_up", "up_east", "up_west"})
+        },
+        "composter" -> #{
+            "level" -> new IntProperty(/*min:*/ 0, /*max:*/ 8)
+        },
+        "target" -> #{
+            "power" -> Properties.INT16
+        },
+        "bee_nest" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "honey_level" -> new IntProperty(/*min:*/ 0, /*max:*/ 5)
+        },
+        "beehive" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "honey_level" -> new IntProperty(/*min:*/ 0, /*max:*/ 5)
+        },
+        "respawn_anchor" -> #{
+            "charges" -> new IntProperty(/*min:*/ 0, /*max:*/ 4)
+        },
+        "blackstone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "blackstone_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "blackstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_blackstone_brick_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_blackstone_brick_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_blackstone_brick_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        },
+        "polished_blackstone_stairs" -> #{
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "half" -> Properties.BLOCK_HALF,
+            "shape" -> Properties.STAIR_SHAPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_blackstone_slab" -> #{
+            "type" -> Properties.SLAB_TYPE,
+            "waterlogged" -> BooleanProperty.INSTANCE
+        },
+        "polished_blackstone_pressure_plate" -> #{
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "polished_blackstone_button" -> #{
+            "face" -> Properties.BUTTON_FACE,
+            "facing" -> Properties.HORIZONTAL_FACES,
+            "powered" -> BooleanProperty.INSTANCE
+        },
+        "polished_blackstone_wall" -> #{
+            "east" -> Properties.WALL_TYPE,
+            "north" -> Properties.WALL_TYPE,
+            "south" -> Properties.WALL_TYPE,
+            "up" -> BooleanProperty.INSTANCE,
+            "waterlogged" -> BooleanProperty.INSTANCE,
+            "west" -> Properties.WALL_TYPE
+        }
+    }
+        
+    public static val VANILLA_BLOCKS = #{
+        "air",
+        "stone",
+        "granite",
+        "polished_granite",
+        "diorite",
+        "polished_diorite",
+        "andesite",
+        "polished_andesite",
+        "grass_block",
+        "dirt",
+        "coarse_dirt",
+        "podzol",
+        "cobblestone",
+        "oak_planks",
+        "spruce_planks",
+        "birch_planks",
+        "jungle_planks",
+        "acacia_planks",
+        "dark_oak_planks",
+        "oak_sapling",
+        "spruce_sapling",
+        "birch_sapling",
+        "jungle_sapling",
+        "acacia_sapling",
+        "dark_oak_sapling",
+        "bedrock",
+        "water",
+        "lava",
+        "sand",
+        "red_sand",
+        "gravel",
+        "gold_ore",
+        "iron_ore",
+        "coal_ore",
+        "nether_gold_ore",
+        "oak_log",
+        "spruce_log",
+        "birch_log",
+        "jungle_log",
+        "acacia_log",
+        "dark_oak_log",
+        "stripped_spruce_log",
+        "stripped_birch_log",
+        "stripped_jungle_log",
+        "stripped_acacia_log",
+        "stripped_dark_oak_log",
+        "stripped_oak_log",
+        "oak_wood",
+        "spruce_wood",
+        "birch_wood",
+        "jungle_wood",
+        "acacia_wood",
+        "dark_oak_wood",
+        "stripped_oak_wood",
+        "stripped_spruce_wood",
+        "stripped_birch_wood",
+        "stripped_jungle_wood",
+        "stripped_acacia_wood",
+        "stripped_dark_oak_wood",
+        "oak_leaves",
+        "spruce_leaves",
+        "birch_leaves",
+        "jungle_leaves",
+        "acacia_leaves",
+        "dark_oak_leaves",
+        "sponge",
+        "wet_sponge",
+        "glass",
+        "lapis_ore",
+        "lapis_block",
+        "dispenser",
+        "sandstone",
+        "chiseled_sandstone",
+        "cut_sandstone",
+        "note_block",
+        "white_bed",
+        "orange_bed",
+        "magenta_bed",
+        "light_blue_bed",
+        "yellow_bed",
+        "lime_bed",
+        "pink_bed",
+        "gray_bed",
+        "light_gray_bed",
+        "cyan_bed",
+        "purple_bed",
+        "blue_bed",
+        "brown_bed",
+        "green_bed",
+        "red_bed",
+        "black_bed",
+        "powered_rail",
+        "detector_rail",
+        "sticky_piston",
+        "cobweb",
+        "grass",
+        "fern",
+        "dead_bush",
+        "seagrass",
+        "tall_seagrass",
+        "piston",
+        "piston_head",
+        "white_wool",
+        "orange_wool",
+        "magenta_wool",
+        "light_blue_wool",
+        "yellow_wool",
+        "lime_wool",
+        "pink_wool",
+        "gray_wool",
+        "light_gray_wool",
+        "cyan_wool",
+        "purple_wool",
+        "blue_wool",
+        "brown_wool",
+        "green_wool",
+        "red_wool",
+        "black_wool",
+        "moving_piston",
+        "dandelion",
+        "poppy",
+        "blue_orchid",
+        "allium",
+        "azure_bluet",
+        "red_tulip",
+        "orange_tulip",
+        "white_tulip",
+        "pink_tulip",
+        "oxeye_daisy",
+        "cornflower",
+        "wither_rose",
+        "lily_of_the_valley",
+        "brown_mushroom",
+        "red_mushroom",
+        "gold_block",
+        "iron_block",
+        "bricks",
+        "tnt",
+        "bookshelf",
+        "mossy_cobblestone",
+        "obsidian",
+        "torch",
+        "wall_torch",
+        "fire",
+        "soul_fire",
+        "spawner",
+        "oak_stairs",
+        "chest",
+        "redstone_wire",
+        "diamond_ore",
+        "diamond_block",
+        "crafting_table",
+        "wheat",
+        "farmland",
+        "furnace",
+        "oak_sign",
+        "spruce_sign",
+        "birch_sign",
+        "acacia_sign",
+        "jungle_sign",
+        "dark_oak_sign",
+        "oak_door",
+        "ladder",
+        "rail",
+        "cobblestone_stairs",
+        "oak_wall_sign",
+        "spruce_wall_sign",
+        "birch_wall_sign",
+        "acacia_wall_sign",
+        "jungle_wall_sign",
+        "dark_oak_wall_sign",
+        "lever",
+        "stone_pressure_plate",
+        "iron_door",
+        "oak_pressure_plate",
+        "spruce_pressure_plate",
+        "birch_pressure_plate",
+        "jungle_pressure_plate",
+        "acacia_pressure_plate",
+        "dark_oak_pressure_plate",
+        "redstone_ore",
+        "redstone_torch",
+        "redstone_wall_torch",
+        "stone_button",
+        "snow",
+        "ice",
+        "snow_block",
+        "cactus",
+        "clay",
+        "sugar_cane",
+        "jukebox",
+        "oak_fence",
+        "pumpkin",
+        "netherrack",
+        "soul_sand",
+        "soul_soil",
+        "basalt",
+        "polished_basalt",
+        "soul_fire_torch",
+        "soul_fire_wall_torch",
+        "glowstone",
+        "nether_portal",
+        "carved_pumpkin",
+        "jack_o_lantern",
+        "cake",
+        "repeater",
+        "white_stained_glass",
+        "orange_stained_glass",
+        "magenta_stained_glass",
+        "light_blue_stained_glass",
+        "yellow_stained_glass",
+        "lime_stained_glass",
+        "pink_stained_glass",
+        "gray_stained_glass",
+        "light_gray_stained_glass",
+        "cyan_stained_glass",
+        "purple_stained_glass",
+        "blue_stained_glass",
+        "brown_stained_glass",
+        "green_stained_glass",
+        "red_stained_glass",
+        "black_stained_glass",
+        "oak_trapdoor",
+        "spruce_trapdoor",
+        "birch_trapdoor",
+        "jungle_trapdoor",
+        "acacia_trapdoor",
+        "dark_oak_trapdoor",
+        "stone_bricks",
+        "mossy_stone_bricks",
+        "cracked_stone_bricks",
+        "chiseled_stone_bricks",
+        "infested_stone",
+        "infested_cobblestone",
+        "infested_stone_bricks",
+        "infested_mossy_stone_bricks",
+        "infested_cracked_stone_bricks",
+        "infested_chiseled_stone_bricks",
+        "brown_mushroom_block",
+        "red_mushroom_block",
+        "mushroom_stem",
+        "iron_bars",
+        "glass_pane",
+        "melon",
+        "attached_pumpkin_stem",
+        "attached_melon_stem",
+        "pumpkin_stem",
+        "melon_stem",
+        "vine",
+        "oak_fence_gate",
+        "brick_stairs",
+        "stone_brick_stairs",
+        "mycelium",
+        "lily_pad",
+        "nether_bricks",
+        "nether_brick_fence",
+        "nether_brick_stairs",
+        "nether_wart",
+        "enchanting_table",
+        "brewing_stand",
+        "cauldron",
+        "end_portal",
+        "end_portal_frame",
+        "end_stone",
+        "dragon_egg",
+        "redstone_lamp",
+        "cocoa",
+        "sandstone_stairs",
+        "emerald_ore",
+        "ender_chest",
+        "tripwire_hook",
+        "tripwire",
+        "emerald_block",
+        "spruce_stairs",
+        "birch_stairs",
+        "jungle_stairs",
+        "command_block",
+        "beacon",
+        "cobblestone_wall",
+        "mossy_cobblestone_wall",
+        "flower_pot",
+        "potted_oak_sapling",
+        "potted_spruce_sapling",
+        "potted_birch_sapling",
+        "potted_jungle_sapling",
+        "potted_acacia_sapling",
+        "potted_dark_oak_sapling",
+        "potted_fern",
+        "potted_dandelion",
+        "potted_poppy",
+        "potted_blue_orchid",
+        "potted_allium",
+        "potted_azure_bluet",
+        "potted_red_tulip",
+        "potted_orange_tulip",
+        "potted_white_tulip",
+        "potted_pink_tulip",
+        "potted_oxeye_daisy",
+        "potted_cornflower",
+        "potted_lily_of_the_valley",
+        "potted_wither_rose",
+        "potted_red_mushroom",
+        "potted_brown_mushroom",
+        "potted_dead_bush",
+        "potted_cactus",
+        "carrots",
+        "potatoes",
+        "oak_button",
+        "spruce_button",
+        "birch_button",
+        "jungle_button",
+        "acacia_button",
+        "dark_oak_button",
+        "skeleton_skull",
+        "skeleton_wall_skull",
+        "wither_skeleton_skull",
+        "wither_skeleton_wall_skull",
+        "zombie_head",
+        "zombie_wall_head",
+        "player_head",
+        "player_wall_head",
+        "creeper_head",
+        "creeper_wall_head",
+        "dragon_head",
+        "dragon_wall_head",
+        "anvil",
+        "chipped_anvil",
+        "damaged_anvil",
+        "trapped_chest",
+        "light_weighted_pressure_plate",
+        "heavy_weighted_pressure_plate",
+        "comparator",
+        "daylight_detector",
+        "redstone_block",
+        "nether_quartz_ore",
+        "hopper",
+        "quartz_block",
+        "chiseled_quartz_block",
+        "quartz_pillar",
+        "quartz_stairs",
+        "activator_rail",
+        "dropper",
+        "white_terracotta",
+        "orange_terracotta",
+        "magenta_terracotta",
+        "light_blue_terracotta",
+        "yellow_terracotta",
+        "lime_terracotta",
+        "pink_terracotta",
+        "gray_terracotta",
+        "light_gray_terracotta",
+        "cyan_terracotta",
+        "purple_terracotta",
+        "blue_terracotta",
+        "brown_terracotta",
+        "green_terracotta",
+        "red_terracotta",
+        "black_terracotta",
+        "white_stained_glass_pane",
+        "orange_stained_glass_pane",
+        "magenta_stained_glass_pane",
+        "light_blue_stained_glass_pane",
+        "yellow_stained_glass_pane",
+        "lime_stained_glass_pane",
+        "pink_stained_glass_pane",
+        "gray_stained_glass_pane",
+        "light_gray_stained_glass_pane",
+        "cyan_stained_glass_pane",
+        "purple_stained_glass_pane",
+        "blue_stained_glass_pane",
+        "brown_stained_glass_pane",
+        "green_stained_glass_pane",
+        "red_stained_glass_pane",
+        "black_stained_glass_pane",
+        "acacia_stairs",
+        "dark_oak_stairs",
+        "slime_block",
+        "barrier",
+        "iron_trapdoor",
+        "prismarine",
+        "prismarine_bricks",
+        "dark_prismarine",
+        "prismarine_stairs",
+        "prismarine_brick_stairs",
+        "dark_prismarine_stairs",
+        "prismarine_slab",
+        "prismarine_brick_slab",
+        "dark_prismarine_slab",
+        "sea_lantern",
+        "hay_block",
+        "white_carpet",
+        "orange_carpet",
+        "magenta_carpet",
+        "light_blue_carpet",
+        "yellow_carpet",
+        "lime_carpet",
+        "pink_carpet",
+        "gray_carpet",
+        "light_gray_carpet",
+        "cyan_carpet",
+        "purple_carpet",
+        "blue_carpet",
+        "brown_carpet",
+        "green_carpet",
+        "red_carpet",
+        "black_carpet",
+        "terracotta",
+        "coal_block",
+        "packed_ice",
+        "sunflower",
+        "lilac",
+        "rose_bush",
+        "peony",
+        "tall_grass",
+        "large_fern",
+        "white_banner",
+        "orange_banner",
+        "magenta_banner",
+        "light_blue_banner",
+        "yellow_banner",
+        "lime_banner",
+        "pink_banner",
+        "gray_banner",
+        "light_gray_banner",
+        "cyan_banner",
+        "purple_banner",
+        "blue_banner",
+        "brown_banner",
+        "green_banner",
+        "red_banner",
+        "black_banner",
+        "white_wall_banner",
+        "orange_wall_banner",
+        "magenta_wall_banner",
+        "light_blue_wall_banner",
+        "yellow_wall_banner",
+        "lime_wall_banner",
+        "pink_wall_banner",
+        "gray_wall_banner",
+        "light_gray_wall_banner",
+        "cyan_wall_banner",
+        "purple_wall_banner",
+        "blue_wall_banner",
+        "brown_wall_banner",
+        "green_wall_banner",
+        "red_wall_banner",
+        "black_wall_banner",
+        "red_sandstone",
+        "chiseled_red_sandstone",
+        "cut_red_sandstone",
+        "red_sandstone_stairs",
+        "oak_slab",
+        "spruce_slab",
+        "birch_slab",
+        "jungle_slab",
+        "acacia_slab",
+        "dark_oak_slab",
+        "stone_slab",
+        "smooth_stone_slab",
+        "sandstone_slab",
+        "cut_sandstone_slab",
+        "petrified_oak_slab",
+        "cobblestone_slab",
+        "brick_slab",
+        "stone_brick_slab",
+        "nether_brick_slab",
+        "quartz_slab",
+        "red_sandstone_slab",
+        "cut_red_sandstone_slab",
+        "purpur_slab",
+        "smooth_stone",
+        "smooth_sandstone",
+        "smooth_quartz",
+        "smooth_red_sandstone",
+        "spruce_fence_gate",
+        "birch_fence_gate",
+        "jungle_fence_gate",
+        "acacia_fence_gate",
+        "dark_oak_fence_gate",
+        "spruce_fence",
+        "birch_fence",
+        "jungle_fence",
+        "acacia_fence",
+        "dark_oak_fence",
+        "spruce_door",
+        "birch_door",
+        "jungle_door",
+        "acacia_door",
+        "dark_oak_door",
+        "end_rod",
+        "chorus_plant",
+        "chorus_flower",
+        "purpur_block",
+        "purpur_pillar",
+        "purpur_stairs",
+        "end_stone_bricks",
+        "beetroots",
+        "grass_path",
+        "end_gateway",
+        "repeating_command_block",
+        "chain_command_block",
+        "frosted_ice",
+        "magma_block",
+        "nether_wart_block",
+        "red_nether_bricks",
+        "bone_block",
+        "structure_void",
+        "observer",
+        "shulker_box",
+        "white_shulker_box",
+        "orange_shulker_box",
+        "magenta_shulker_box",
+        "light_blue_shulker_box",
+        "yellow_shulker_box",
+        "lime_shulker_box",
+        "pink_shulker_box",
+        "gray_shulker_box",
+        "light_gray_shulker_box",
+        "cyan_shulker_box",
+        "purple_shulker_box",
+        "blue_shulker_box",
+        "brown_shulker_box",
+        "green_shulker_box",
+        "red_shulker_box",
+        "black_shulker_box",
+        "white_glazed_terracotta",
+        "orange_glazed_terracotta",
+        "magenta_glazed_terracotta",
+        "light_blue_glazed_terracotta",
+        "yellow_glazed_terracotta",
+        "lime_glazed_terracotta",
+        "pink_glazed_terracotta",
+        "gray_glazed_terracotta",
+        "light_gray_glazed_terracotta",
+        "cyan_glazed_terracotta",
+        "purple_glazed_terracotta",
+        "blue_glazed_terracotta",
+        "brown_glazed_terracotta",
+        "green_glazed_terracotta",
+        "red_glazed_terracotta",
+        "black_glazed_terracotta",
+        "white_concrete",
+        "orange_concrete",
+        "magenta_concrete",
+        "light_blue_concrete",
+        "yellow_concrete",
+        "lime_concrete",
+        "pink_concrete",
+        "gray_concrete",
+        "light_gray_concrete",
+        "cyan_concrete",
+        "purple_concrete",
+        "blue_concrete",
+        "brown_concrete",
+        "green_concrete",
+        "red_concrete",
+        "black_concrete",
+        "white_concrete_powder",
+        "orange_concrete_powder",
+        "magenta_concrete_powder",
+        "light_blue_concrete_powder",
+        "yellow_concrete_powder",
+        "lime_concrete_powder",
+        "pink_concrete_powder",
+        "gray_concrete_powder",
+        "light_gray_concrete_powder",
+        "cyan_concrete_powder",
+        "purple_concrete_powder",
+        "blue_concrete_powder",
+        "brown_concrete_powder",
+        "green_concrete_powder",
+        "red_concrete_powder",
+        "black_concrete_powder",
+        "kelp",
+        "kelp_plant",
+        "dried_kelp_block",
+        "turtle_egg",
+        "dead_tube_coral_block",
+        "dead_brain_coral_block",
+        "dead_bubble_coral_block",
+        "dead_fire_coral_block",
+        "dead_horn_coral_block",
+        "tube_coral_block",
+        "brain_coral_block",
+        "bubble_coral_block",
+        "fire_coral_block",
+        "horn_coral_block",
+        "dead_tube_coral",
+        "dead_brain_coral",
+        "dead_bubble_coral",
+        "dead_fire_coral",
+        "dead_horn_coral",
+        "tube_coral",
+        "brain_coral",
+        "bubble_coral",
+        "fire_coral",
+        "horn_coral",
+        "dead_tube_coral_fan",
+        "dead_brain_coral_fan",
+        "dead_bubble_coral_fan",
+        "dead_fire_coral_fan",
+        "dead_horn_coral_fan",
+        "tube_coral_fan",
+        "brain_coral_fan",
+        "bubble_coral_fan",
+        "fire_coral_fan",
+        "horn_coral_fan",
+        "dead_tube_coral_wall_fan",
+        "dead_brain_coral_wall_fan",
+        "dead_bubble_coral_wall_fan",
+        "dead_fire_coral_wall_fan",
+        "dead_horn_coral_wall_fan",
+        "tube_coral_wall_fan",
+        "brain_coral_wall_fan",
+        "bubble_coral_wall_fan",
+        "fire_coral_wall_fan",
+        "horn_coral_wall_fan",
+        "sea_pickle",
+        "blue_ice",
+        "conduit",
+        "bamboo_sapling",
+        "bamboo",
+        "potted_bamboo",
+        "void_air",
+        "cave_air",
+        "bubble_column",
+        "polished_granite_stairs",
+        "smooth_red_sandstone_stairs",
+        "mossy_stone_brick_stairs",
+        "polished_diorite_stairs",
+        "mossy_cobblestone_stairs",
+        "end_stone_brick_stairs",
+        "stone_stairs",
+        "smooth_sandstone_stairs",
+        "smooth_quartz_stairs",
+        "granite_stairs",
+        "andesite_stairs",
+        "red_nether_brick_stairs",
+        "polished_andesite_stairs",
+        "diorite_stairs",
+        "polished_granite_slab",
+        "smooth_red_sandstone_slab",
+        "mossy_stone_brick_slab",
+        "polished_diorite_slab",
+        "mossy_cobblestone_slab",
+        "end_stone_brick_slab",
+        "smooth_sandstone_slab",
+        "smooth_quartz_slab",
+        "granite_slab",
+        "andesite_slab",
+        "red_nether_brick_slab",
+        "polished_andesite_slab",
+        "diorite_slab",
+        "brick_wall",
+        "prismarine_wall",
+        "red_sandstone_wall",
+        "mossy_stone_brick_wall",
+        "granite_wall",
+        "stone_brick_wall",
+        "nether_brick_wall",
+        "andesite_wall",
+        "red_nether_brick_wall",
+        "sandstone_wall",
+        "end_stone_brick_wall",
+        "diorite_wall",
+        "scaffolding",
+        "loom",
+        "barrel",
+        "smoker",
+        "blast_furnace",
+        "cartography_table",
+        "fletching_table",
+        "grindstone",
+        "lectern",
+        "smithing_table",
+        "stonecutter",
+        "bell",
+        "lantern",
+        "soul_fire_lantern",
+        "campfire",
+        "soul_campfire",
+        "sweet_berry_bush",
+        "warped_stem",
+        "stripped_warped_stem",
+        "warped_hyphae",
+        "stripped_warped_hyphae",
+        "warped_nylium",
+        "warped_fungus",
+        "warped_wart_block",
+        "warped_roots",
+        "nether_sprouts",
+        "crimson_stem",
+        "stripped_crimson_stem",
+        "crimson_hyphae",
+        "stripped_crimson_hyphae",
+        "crimson_nylium",
+        "crimson_fungus",
+        "shroomlight",
+        "weeping_vines",
+        "weeping_vines_plant",
+        "twisting_vines",
+        "twisting_vines_plant",
+        "crimson_roots",
+        "crimson_planks",
+        "warped_planks",
+        "crimson_slab",
+        "warped_slab",
+        "crimson_pressure_plate",
+        "warped_pressure_plate",
+        "crimson_fence",
+        "warped_fence",
+        "crimson_trapdoor",
+        "warped_trapdoor",
+        "crimson_fence_gate",
+        "warped_fence_gate",
+        "crimson_stairs",
+        "warped_stairs",
+        "crimson_button",
+        "warped_button",
+        "crimson_door",
+        "warped_door",
+        "crimson_sign",
+        "warped_sign",
+        "crimson_wall_sign",
+        "warped_wall_sign",
+        "structure_block",
+        "jigsaw",
+        "composter",
+        "target",
+        "bee_nest",
+        "beehive",
+        "honey_block",
+        "honeycomb_block",
+        "netherite_block",
+        "ancient_debris",
+        "crying_obsidian",
+        "respawn_anchor",
+        "potted_crimson_fungus",
+        "potted_warped_fungus",
+        "potted_crimson_roots",
+        "potted_warped_roots",
+        "lodestone",
+        "blackstone",
+        "blackstone_stairs",
+        "blackstone_wall",
+        "blackstone_slab",
+        "polished_blackstone",
+        "polished_blackstone_bricks",
+        "cracked_polished_blackstone_bricks",
+        "chiseled_polished_blackstone",
+        "polished_blackstone_brick_slab",
+        "polished_blackstone_brick_stairs",
+        "polished_blackstone_brick_wall",
+        "gilded_blackstone",
+        "polished_blackstone_stairs",
+        "polished_blackstone_slab",
+        "polished_blackstone_pressure_plate",
+        "polished_blackstone_button",
+        "polished_blackstone_wall",
+        "chiseled_nether_bricks",
+        "cracked_nether_bricks",
+        "quartz_bricks"
+    }
+
+    def static isVanillaBlock(String str) { VANILLA_BLOCKS.contains(str) } 
+
+    public static val VANILLA_ITEMS = #{
+        "air",
+        "stone",
+        "granite",
+        "polished_granite",
+        "diorite",
+        "polished_diorite",
+        "andesite",
+        "polished_andesite",
+        "grass_block",
+        "dirt",
+        "coarse_dirt",
+        "podzol",
+        "crimson_nylium",
+        "warped_nylium",
+        "cobblestone",
+        "oak_planks",
+        "spruce_planks",
+        "birch_planks",
+        "jungle_planks",
+        "acacia_planks",
+        "dark_oak_planks",
+        "crimson_planks",
+        "warped_planks",
+        "oak_sapling",
+        "spruce_sapling",
+        "birch_sapling",
+        "jungle_sapling",
+        "acacia_sapling",
+        "dark_oak_sapling",
+        "bedrock",
+        "sand",
+        "red_sand",
+        "gravel",
+        "gold_ore",
+        "iron_ore",
+        "coal_ore",
+        "nether_gold_ore",
+        "oak_log",
+        "spruce_log",
+        "birch_log",
+        "jungle_log",
+        "acacia_log",
+        "dark_oak_log",
+        "crimson_stem",
+        "warped_stem",
+        "stripped_oak_log",
+        "stripped_spruce_log",
+        "stripped_birch_log",
+        "stripped_jungle_log",
+        "stripped_acacia_log",
+        "stripped_dark_oak_log",
+        "stripped_crimson_stem",
+        "stripped_warped_stem",
+        "stripped_oak_wood",
+        "stripped_spruce_wood",
+        "stripped_birch_wood",
+        "stripped_jungle_wood",
+        "stripped_acacia_wood",
+        "stripped_dark_oak_wood",
+        "stripped_crimson_hyphae",
+        "stripped_warped_hyphae",
+        "oak_wood",
+        "spruce_wood",
+        "birch_wood",
+        "jungle_wood",
+        "acacia_wood",
+        "dark_oak_wood",
+        "crimson_hyphae",
+        "warped_hyphae",
+        "oak_leaves",
+        "spruce_leaves",
+        "birch_leaves",
+        "jungle_leaves",
+        "acacia_leaves",
+        "dark_oak_leaves",
+        "sponge",
+        "wet_sponge",
+        "glass",
+        "lapis_ore",
+        "lapis_block",
+        "dispenser",
+        "sandstone",
+        "chiseled_sandstone",
+        "cut_sandstone",
+        "note_block",
+        "powered_rail",
+        "detector_rail",
+        "sticky_piston",
+        "cobweb",
+        "grass",
+        "fern",
+        "dead_bush",
+        "seagrass",
+        "sea_pickle",
+        "piston",
+        "white_wool",
+        "orange_wool",
+        "magenta_wool",
+        "light_blue_wool",
+        "yellow_wool",
+        "lime_wool",
+        "pink_wool",
+        "gray_wool",
+        "light_gray_wool",
+        "cyan_wool",
+        "purple_wool",
+        "blue_wool",
+        "brown_wool",
+        "green_wool",
+        "red_wool",
+        "black_wool",
+        "dandelion",
+        "poppy",
+        "blue_orchid",
+        "allium",
+        "azure_bluet",
+        "red_tulip",
+        "orange_tulip",
+        "white_tulip",
+        "pink_tulip",
+        "oxeye_daisy",
+        "cornflower",
+        "lily_of_the_valley",
+        "wither_rose",
+        "brown_mushroom",
+        "red_mushroom",
+        "crimson_fungus",
+        "warped_fungus",
+        "crimson_roots",
+        "warped_roots",
+        "nether_sprouts",
+        "weeping_vines",
+        "twisting_vines",
+        "sugar_cane",
+        "kelp",
+        "bamboo",
+        "gold_block",
+        "iron_block",
+        "oak_slab",
+        "spruce_slab",
+        "birch_slab",
+        "jungle_slab",
+        "acacia_slab",
+        "dark_oak_slab",
+        "crimson_slab",
+        "warped_slab",
+        "stone_slab",
+        "smooth_stone_slab",
+        "sandstone_slab",
+        "cut_sandstone_slab",
+        "petrified_oak_slab",
+        "cobblestone_slab",
+        "brick_slab",
+        "stone_brick_slab",
+        "nether_brick_slab",
+        "quartz_slab",
+        "red_sandstone_slab",
+        "cut_red_sandstone_slab",
+        "purpur_slab",
+        "prismarine_slab",
+        "prismarine_brick_slab",
+        "dark_prismarine_slab",
+        "smooth_quartz",
+        "smooth_red_sandstone",
+        "smooth_sandstone",
+        "smooth_stone",
+        "bricks",
+        "tnt",
+        "bookshelf",
+        "mossy_cobblestone",
+        "obsidian",
+        "torch",
+        "end_rod",
+        "chorus_plant",
+        "chorus_flower",
+        "purpur_block",
+        "purpur_pillar",
+        "purpur_stairs",
+        "spawner",
+        "oak_stairs",
+        "chest",
+        "diamond_ore",
+        "diamond_block",
+        "crafting_table",
+        "farmland",
+        "furnace",
+        "ladder",
+        "rail",
+        "cobblestone_stairs",
+        "lever",
+        "stone_pressure_plate",
+        "oak_pressure_plate",
+        "spruce_pressure_plate",
+        "birch_pressure_plate",
+        "jungle_pressure_plate",
+        "acacia_pressure_plate",
+        "dark_oak_pressure_plate",
+        "crimson_pressure_plate",
+        "warped_pressure_plate",
+        "redstone_ore",
+        "redstone_torch",
+        "stone_button",
+        "snow",
+        "ice",
+        "snow_block",
+        "cactus",
+        "clay",
+        "jukebox",
+        "oak_fence",
+        "spruce_fence",
+        "birch_fence",
+        "jungle_fence",
+        "acacia_fence",
+        "dark_oak_fence",
+        "crimson_fence",
+        "warped_fence",
+        "pumpkin",
+        "carved_pumpkin",
+        "netherrack",
+        "soul_sand",
+        "soul_soil",
+        "basalt",
+        "polished_basalt",
+        "soul_fire_torch",
+        "glowstone",
+        "jack_o_lantern",
+        "oak_trapdoor",
+        "spruce_trapdoor",
+        "birch_trapdoor",
+        "jungle_trapdoor",
+        "acacia_trapdoor",
+        "dark_oak_trapdoor",
+        "crimson_trapdoor",
+        "warped_trapdoor",
+        "infested_stone",
+        "infested_cobblestone",
+        "infested_stone_bricks",
+        "infested_mossy_stone_bricks",
+        "infested_cracked_stone_bricks",
+        "infested_chiseled_stone_bricks",
+        "stone_bricks",
+        "mossy_stone_bricks",
+        "cracked_stone_bricks",
+        "chiseled_stone_bricks",
+        "brown_mushroom_block",
+        "red_mushroom_block",
+        "mushroom_stem",
+        "iron_bars",
+        "glass_pane",
+        "melon",
+        "vine",
+        "oak_fence_gate",
+        "spruce_fence_gate",
+        "birch_fence_gate",
+        "jungle_fence_gate",
+        "acacia_fence_gate",
+        "dark_oak_fence_gate",
+        "crimson_fence_gate",
+        "warped_fence_gate",
+        "brick_stairs",
+        "stone_brick_stairs",
+        "mycelium",
+        "lily_pad",
+        "nether_bricks",
+        "cracked_nether_bricks",
+        "chiseled_nether_bricks",
+        "nether_brick_fence",
+        "nether_brick_stairs",
+        "enchanting_table",
+        "end_portal_frame",
+        "end_stone",
+        "end_stone_bricks",
+        "dragon_egg",
+        "redstone_lamp",
+        "sandstone_stairs",
+        "emerald_ore",
+        "ender_chest",
+        "tripwire_hook",
+        "emerald_block",
+        "spruce_stairs",
+        "birch_stairs",
+        "jungle_stairs",
+        "crimson_stairs",
+        "warped_stairs",
+        "command_block",
+        "beacon",
+        "cobblestone_wall",
+        "mossy_cobblestone_wall",
+        "brick_wall",
+        "prismarine_wall",
+        "red_sandstone_wall",
+        "mossy_stone_brick_wall",
+        "granite_wall",
+        "stone_brick_wall",
+        "nether_brick_wall",
+        "andesite_wall",
+        "red_nether_brick_wall",
+        "sandstone_wall",
+        "end_stone_brick_wall",
+        "diorite_wall",
+        "oak_button",
+        "spruce_button",
+        "birch_button",
+        "jungle_button",
+        "acacia_button",
+        "dark_oak_button",
+        "crimson_button",
+        "warped_button",
+        "anvil",
+        "chipped_anvil",
+        "damaged_anvil",
+        "trapped_chest",
+        "light_weighted_pressure_plate",
+        "heavy_weighted_pressure_plate",
+        "daylight_detector",
+        "redstone_block",
+        "nether_quartz_ore",
+        "hopper",
+        "chiseled_quartz_block",
+        "quartz_block",
+        "quartz_bricks",
+        "quartz_pillar",
+        "quartz_stairs",
+        "activator_rail",
+        "dropper",
+        "white_terracotta",
+        "orange_terracotta",
+        "magenta_terracotta",
+        "light_blue_terracotta",
+        "yellow_terracotta",
+        "lime_terracotta",
+        "pink_terracotta",
+        "gray_terracotta",
+        "light_gray_terracotta",
+        "cyan_terracotta",
+        "purple_terracotta",
+        "blue_terracotta",
+        "brown_terracotta",
+        "green_terracotta",
+        "red_terracotta",
+        "black_terracotta",
+        "barrier",
+        "iron_trapdoor",
+        "hay_block",
+        "white_carpet",
+        "orange_carpet",
+        "magenta_carpet",
+        "light_blue_carpet",
+        "yellow_carpet",
+        "lime_carpet",
+        "pink_carpet",
+        "gray_carpet",
+        "light_gray_carpet",
+        "cyan_carpet",
+        "purple_carpet",
+        "blue_carpet",
+        "brown_carpet",
+        "green_carpet",
+        "red_carpet",
+        "black_carpet",
+        "terracotta",
+        "coal_block",
+        "packed_ice",
+        "acacia_stairs",
+        "dark_oak_stairs",
+        "slime_block",
+        "grass_path",
+        "sunflower",
+        "lilac",
+        "rose_bush",
+        "peony",
+        "tall_grass",
+        "large_fern",
+        "white_stained_glass",
+        "orange_stained_glass",
+        "magenta_stained_glass",
+        "light_blue_stained_glass",
+        "yellow_stained_glass",
+        "lime_stained_glass",
+        "pink_stained_glass",
+        "gray_stained_glass",
+        "light_gray_stained_glass",
+        "cyan_stained_glass",
+        "purple_stained_glass",
+        "blue_stained_glass",
+        "brown_stained_glass",
+        "green_stained_glass",
+        "red_stained_glass",
+        "black_stained_glass",
+        "white_stained_glass_pane",
+        "orange_stained_glass_pane",
+        "magenta_stained_glass_pane",
+        "light_blue_stained_glass_pane",
+        "yellow_stained_glass_pane",
+        "lime_stained_glass_pane",
+        "pink_stained_glass_pane",
+        "gray_stained_glass_pane",
+        "light_gray_stained_glass_pane",
+        "cyan_stained_glass_pane",
+        "purple_stained_glass_pane",
+        "blue_stained_glass_pane",
+        "brown_stained_glass_pane",
+        "green_stained_glass_pane",
+        "red_stained_glass_pane",
+        "black_stained_glass_pane",
+        "prismarine",
+        "prismarine_bricks",
+        "dark_prismarine",
+        "prismarine_stairs",
+        "prismarine_brick_stairs",
+        "dark_prismarine_stairs",
+        "sea_lantern",
+        "red_sandstone",
+        "chiseled_red_sandstone",
+        "cut_red_sandstone",
+        "red_sandstone_stairs",
+        "repeating_command_block",
+        "chain_command_block",
+        "magma_block",
+        "nether_wart_block",
+        "warped_wart_block",
+        "red_nether_bricks",
+        "bone_block",
+        "structure_void",
+        "observer",
+        "shulker_box",
+        "white_shulker_box",
+        "orange_shulker_box",
+        "magenta_shulker_box",
+        "light_blue_shulker_box",
+        "yellow_shulker_box",
+        "lime_shulker_box",
+        "pink_shulker_box",
+        "gray_shulker_box",
+        "light_gray_shulker_box",
+        "cyan_shulker_box",
+        "purple_shulker_box",
+        "blue_shulker_box",
+        "brown_shulker_box",
+        "green_shulker_box",
+        "red_shulker_box",
+        "black_shulker_box",
+        "white_glazed_terracotta",
+        "orange_glazed_terracotta",
+        "magenta_glazed_terracotta",
+        "light_blue_glazed_terracotta",
+        "yellow_glazed_terracotta",
+        "lime_glazed_terracotta",
+        "pink_glazed_terracotta",
+        "gray_glazed_terracotta",
+        "light_gray_glazed_terracotta",
+        "cyan_glazed_terracotta",
+        "purple_glazed_terracotta",
+        "blue_glazed_terracotta",
+        "brown_glazed_terracotta",
+        "green_glazed_terracotta",
+        "red_glazed_terracotta",
+        "black_glazed_terracotta",
+        "white_concrete",
+        "orange_concrete",
+        "magenta_concrete",
+        "light_blue_concrete",
+        "yellow_concrete",
+        "lime_concrete",
+        "pink_concrete",
+        "gray_concrete",
+        "light_gray_concrete",
+        "cyan_concrete",
+        "purple_concrete",
+        "blue_concrete",
+        "brown_concrete",
+        "green_concrete",
+        "red_concrete",
+        "black_concrete",
+        "white_concrete_powder",
+        "orange_concrete_powder",
+        "magenta_concrete_powder",
+        "light_blue_concrete_powder",
+        "yellow_concrete_powder",
+        "lime_concrete_powder",
+        "pink_concrete_powder",
+        "gray_concrete_powder",
+        "light_gray_concrete_powder",
+        "cyan_concrete_powder",
+        "purple_concrete_powder",
+        "blue_concrete_powder",
+        "brown_concrete_powder",
+        "green_concrete_powder",
+        "red_concrete_powder",
+        "black_concrete_powder",
+        "turtle_egg",
+        "dead_tube_coral_block",
+        "dead_brain_coral_block",
+        "dead_bubble_coral_block",
+        "dead_fire_coral_block",
+        "dead_horn_coral_block",
+        "tube_coral_block",
+        "brain_coral_block",
+        "bubble_coral_block",
+        "fire_coral_block",
+        "horn_coral_block",
+        "tube_coral",
+        "brain_coral",
+        "bubble_coral",
+        "fire_coral",
+        "horn_coral",
+        "dead_brain_coral",
+        "dead_bubble_coral",
+        "dead_fire_coral",
+        "dead_horn_coral",
+        "dead_tube_coral",
+        "tube_coral_fan",
+        "brain_coral_fan",
+        "bubble_coral_fan",
+        "fire_coral_fan",
+        "horn_coral_fan",
+        "dead_tube_coral_fan",
+        "dead_brain_coral_fan",
+        "dead_bubble_coral_fan",
+        "dead_fire_coral_fan",
+        "dead_horn_coral_fan",
+        "blue_ice",
+        "conduit",
+        "polished_granite_stairs",
+        "smooth_red_sandstone_stairs",
+        "mossy_stone_brick_stairs",
+        "polished_diorite_stairs",
+        "mossy_cobblestone_stairs",
+        "end_stone_brick_stairs",
+        "stone_stairs",
+        "smooth_sandstone_stairs",
+        "smooth_quartz_stairs",
+        "granite_stairs",
+        "andesite_stairs",
+        "red_nether_brick_stairs",
+        "polished_andesite_stairs",
+        "diorite_stairs",
+        "polished_granite_slab",
+        "smooth_red_sandstone_slab",
+        "mossy_stone_brick_slab",
+        "polished_diorite_slab",
+        "mossy_cobblestone_slab",
+        "end_stone_brick_slab",
+        "smooth_sandstone_slab",
+        "smooth_quartz_slab",
+        "granite_slab",
+        "andesite_slab",
+        "red_nether_brick_slab",
+        "polished_andesite_slab",
+        "diorite_slab",
+        "scaffolding",
+        "iron_door",
+        "oak_door",
+        "spruce_door",
+        "birch_door",
+        "jungle_door",
+        "acacia_door",
+        "dark_oak_door",
+        "crimson_door",
+        "warped_door",
+        "repeater",
+        "comparator",
+        "structure_block",
+        "jigsaw",
+        "turtle_helmet",
+        "scute",
+        "iron_shovel",
+        "iron_pickaxe",
+        "iron_axe",
+        "flint_and_steel",
+        "apple",
+        "bow",
+        "arrow",
+        "coal",
+        "charcoal",
+        "diamond",
+        "iron_ingot",
+        "gold_ingot",
+        "iron_sword",
+        "wooden_sword",
+        "wooden_shovel",
+        "wooden_pickaxe",
+        "wooden_axe",
+        "stone_sword",
+        "stone_shovel",
+        "stone_pickaxe",
+        "stone_axe",
+        "diamond_sword",
+        "diamond_shovel",
+        "diamond_pickaxe",
+        "diamond_axe",
+        "stick",
+        "bowl",
+        "mushroom_stew",
+        "golden_sword",
+        "golden_shovel",
+        "golden_pickaxe",
+        "golden_axe",
+        "netherite_sword",
+        "netherite_shovel",
+        "netherite_pickaxe",
+        "netherite_axe",
+        "string",
+        "feather",
+        "gunpowder",
+        "wooden_hoe",
+        "stone_hoe",
+        "iron_hoe",
+        "diamond_hoe",
+        "golden_hoe",
+        "netherite_hoe",
+        "wheat_seeds",
+        "wheat",
+        "bread",
+        "leather_helmet",
+        "leather_chestplate",
+        "leather_leggings",
+        "leather_boots",
+        "chainmail_helmet",
+        "chainmail_chestplate",
+        "chainmail_leggings",
+        "chainmail_boots",
+        "iron_helmet",
+        "iron_chestplate",
+        "iron_leggings",
+        "iron_boots",
+        "diamond_helmet",
+        "diamond_chestplate",
+        "diamond_leggings",
+        "diamond_boots",
+        "golden_helmet",
+        "golden_chestplate",
+        "golden_leggings",
+        "golden_boots",
+        "netherite_helmet",
+        "netherite_chestplate",
+        "netherite_leggings",
+        "netherite_boots",
+        "flint",
+        "porkchop",
+        "cooked_porkchop",
+        "painting",
+        "golden_apple",
+        "enchanted_golden_apple",
+        "oak_sign",
+        "spruce_sign",
+        "birch_sign",
+        "jungle_sign",
+        "acacia_sign",
+        "dark_oak_sign",
+        "crimson_sign",
+        "warped_sign",
+        "bucket",
+        "water_bucket",
+        "lava_bucket",
+        "minecart",
+        "saddle",
+        "redstone",
+        "snowball",
+        "oak_boat",
+        "leather",
+        "milk_bucket",
+        "pufferfish_bucket",
+        "salmon_bucket",
+        "cod_bucket",
+        "tropical_fish_bucket",
+        "brick",
+        "clay_ball",
+        "dried_kelp_block",
+        "paper",
+        "book",
+        "slime_ball",
+        "chest_minecart",
+        "furnace_minecart",
+        "egg",
+        "compass",
+        "fishing_rod",
+        "clock",
+        "glowstone_dust",
+        "cod",
+        "salmon",
+        "tropical_fish",
+        "pufferfish",
+        "cooked_cod",
+        "cooked_salmon",
+        "ink_sac",
+        "red_dye",
+        "green_dye",
+        "cocoa_beans",
+        "lapis_lazuli",
+        "purple_dye",
+        "cyan_dye",
+        "light_gray_dye",
+        "gray_dye",
+        "pink_dye",
+        "lime_dye",
+        "yellow_dye",
+        "light_blue_dye",
+        "magenta_dye",
+        "orange_dye",
+        "bone_meal",
+        "blue_dye",
+        "brown_dye",
+        "black_dye",
+        "white_dye",
+        "bone",
+        "sugar",
+        "cake",
+        "white_bed",
+        "orange_bed",
+        "magenta_bed",
+        "light_blue_bed",
+        "yellow_bed",
+        "lime_bed",
+        "pink_bed",
+        "gray_bed",
+        "light_gray_bed",
+        "cyan_bed",
+        "purple_bed",
+        "blue_bed",
+        "brown_bed",
+        "green_bed",
+        "red_bed",
+        "black_bed",
+        "cookie",
+        "filled_map",
+        "shears",
+        "melon_slice",
+        "dried_kelp",
+        "pumpkin_seeds",
+        "melon_seeds",
+        "beef",
+        "cooked_beef",
+        "chicken",
+        "cooked_chicken",
+        "rotten_flesh",
+        "ender_pearl",
+        "blaze_rod",
+        "ghast_tear",
+        "gold_nugget",
+        "nether_wart",
+        "potion",
+        "glass_bottle",
+        "spider_eye",
+        "fermented_spider_eye",
+        "blaze_powder",
+        "magma_cream",
+        "brewing_stand",
+        "cauldron",
+        "ender_eye",
+        "glistering_melon_slice",
+        "bat_spawn_egg",
+        "bee_spawn_egg",
+        "blaze_spawn_egg",
+        "cat_spawn_egg",
+        "cave_spider_spawn_egg",
+        "chicken_spawn_egg",
+        "cod_spawn_egg",
+        "cow_spawn_egg",
+        "creeper_spawn_egg",
+        "dolphin_spawn_egg",
+        "donkey_spawn_egg",
+        "drowned_spawn_egg",
+        "elder_guardian_spawn_egg",
+        "enderman_spawn_egg",
+        "endermite_spawn_egg",
+        "evoker_spawn_egg",
+        "fox_spawn_egg",
+        "ghast_spawn_egg",
+        "guardian_spawn_egg",
+        "hoglin_spawn_egg",
+        "horse_spawn_egg",
+        "husk_spawn_egg",
+        "llama_spawn_egg",
+        "magma_cube_spawn_egg",
+        "mooshroom_spawn_egg",
+        "mule_spawn_egg",
+        "ocelot_spawn_egg",
+        "panda_spawn_egg",
+        "parrot_spawn_egg",
+        "phantom_spawn_egg",
+        "pig_spawn_egg",
+        "piglin_spawn_egg",
+        "pillager_spawn_egg",
+        "polar_bear_spawn_egg",
+        "pufferfish_spawn_egg",
+        "rabbit_spawn_egg",
+        "ravager_spawn_egg",
+        "salmon_spawn_egg",
+        "sheep_spawn_egg",
+        "shulker_spawn_egg",
+        "silverfish_spawn_egg",
+        "skeleton_spawn_egg",
+        "skeleton_horse_spawn_egg",
+        "slime_spawn_egg",
+        "spider_spawn_egg",
+        "squid_spawn_egg",
+        "stray_spawn_egg",
+        "strider_spawn_egg",
+        "trader_llama_spawn_egg",
+        "tropical_fish_spawn_egg",
+        "turtle_spawn_egg",
+        "vex_spawn_egg",
+        "villager_spawn_egg",
+        "vindicator_spawn_egg",
+        "wandering_trader_spawn_egg",
+        "witch_spawn_egg",
+        "wither_skeleton_spawn_egg",
+        "wolf_spawn_egg",
+        "zoglin_spawn_egg",
+        "zombie_spawn_egg",
+        "zombie_horse_spawn_egg",
+        "zombified_piglin_spawn_egg",
+        "zombie_villager_spawn_egg",
+        "experience_bottle",
+        "fire_charge",
+        "writable_book",
+        "written_book",
+        "emerald",
+        "item_frame",
+        "flower_pot",
+        "carrot",
+        "potato",
+        "baked_potato",
+        "poisonous_potato",
+        "map",
+        "golden_carrot",
+        "skeleton_skull",
+        "wither_skeleton_skull",
+        "player_head",
+        "zombie_head",
+        "creeper_head",
+        "dragon_head",
+        "carrot_on_a_stick",
+        "warped_fungus_on_a_stick",
+        "nether_star",
+        "pumpkin_pie",
+        "firework_rocket",
+        "firework_star",
+        "enchanted_book",
+        "nether_brick",
+        "quartz",
+        "tnt_minecart",
+        "hopper_minecart",
+        "prismarine_shard",
+        "prismarine_crystals",
+        "rabbit",
+        "cooked_rabbit",
+        "rabbit_stew",
+        "rabbit_foot",
+        "rabbit_hide",
+        "armor_stand",
+        "iron_horse_armor",
+        "golden_horse_armor",
+        "diamond_horse_armor",
+        "leather_horse_armor",
+        "lead",
+        "name_tag",
+        "command_block_minecart",
+        "mutton",
+        "cooked_mutton",
+        "white_banner",
+        "orange_banner",
+        "magenta_banner",
+        "light_blue_banner",
+        "yellow_banner",
+        "lime_banner",
+        "pink_banner",
+        "gray_banner",
+        "light_gray_banner",
+        "cyan_banner",
+        "purple_banner",
+        "blue_banner",
+        "brown_banner",
+        "green_banner",
+        "red_banner",
+        "black_banner",
+        "end_crystal",
+        "chorus_fruit",
+        "popped_chorus_fruit",
+        "beetroot",
+        "beetroot_seeds",
+        "beetroot_soup",
+        "dragon_breath",
+        "splash_potion",
+        "spectral_arrow",
+        "tipped_arrow",
+        "lingering_potion",
+        "shield",
+        "elytra",
+        "spruce_boat",
+        "birch_boat",
+        "jungle_boat",
+        "acacia_boat",
+        "dark_oak_boat",
+        "totem_of_undying",
+        "shulker_shell",
+        "iron_nugget",
+        "knowledge_book",
+        "debug_stick",
+        "music_disc_13",
+        "music_disc_cat",
+        "music_disc_blocks",
+        "music_disc_chirp",
+        "music_disc_far",
+        "music_disc_mall",
+        "music_disc_mellohi",
+        "music_disc_stal",
+        "music_disc_strad",
+        "music_disc_ward",
+        "music_disc_11",
+        "music_disc_wait",
+        "trident",
+        "phantom_membrane",
+        "nautilus_shell",
+        "heart_of_the_sea",
+        "crossbow",
+        "suspicious_stew",
+        "loom",
+        "flower_banner_pattern",
+        "creeper_banner_pattern",
+        "skull_banner_pattern",
+        "mojang_banner_pattern",
+        "globe_banner_pattern",
+        "piglin_banner_pattern",
+        "composter",
+        "barrel",
+        "smoker",
+        "blast_furnace",
+        "cartography_table",
+        "fletching_table",
+        "grindstone",
+        "lectern",
+        "smithing_table",
+        "stonecutter",
+        "bell",
+        "lantern",
+        "soul_fire_lantern",
+        "sweet_berries",
+        "campfire",
+        "soul_campfire",
+        "shroomlight",
+        "honeycomb",
+        "bee_nest",
+        "beehive",
+        "honey_bottle",
+        "honey_block",
+        "honeycomb_block",
+        "lodestone",
+        "netherite_block",
+        "ancient_debris",
+        "netherite_ingot",
+        "netherite_scrap",
+        "target",
+        "crying_obsidian",
+        "blackstone",
+        "blackstone_slab",
+        "blackstone_stairs",
+        "blackstone_wall",
+        "gilded_blackstone",
+        "polished_blackstone",
+        "polished_blackstone_slab",
+        "polished_blackstone_stairs",
+        "polished_blackstone_wall",
+        "polished_blackstone_button",
+        "polished_blackstone_pressure_plate",
+        "chiseled_polished_blackstone",
+        "polished_blackstone_bricks",
+        "polished_blackstone_brick_slab",
+        "polished_blackstone_brick_stairs",
+        "polished_blackstone_brick_wall",
+        "cracked_polished_blackstone_bricks",
+        "respawn_anchor"
+    }
+
+    def static isVanillaItem(String str) { VANILLA_ITEMS.contains(str) }
+
+    public static val VANILLA_FLUIDS = #{
+        "empty",
+        "flowing_water",
+        "water",
+        "flowing_lava",
+        "lava"
+    }
+
+    def static isVanillaFluid(String str) { VANILLA_FLUIDS.contains(str) }
+
+    public static val VANILLA_MOB_EFFECTS = #{
+        "speed",
+        "slowness",
+        "haste",
+        "mining_fatigue",
+        "strength",
+        "instant_health",
+        "instant_damage",
+        "jump_boost",
+        "nausea",
+        "regeneration",
+        "resistance",
+        "fire_resistance",
+        "water_breathing",
+        "invisibility",
+        "blindness",
+        "night_vision",
+        "hunger",
+        "weakness",
+        "poison",
+        "wither",
+        "health_boost",
+        "absorption",
+        "saturation",
+        "glowing",
+        "levitation",
+        "luck",
+        "unluck",
+        "slow_falling",
+        "conduit_power",
+        "dolphins_grace",
+        "bad_omen",
+        "hero_of_the_village"
+    }
+
+    def static isVanillaMobEffect(String str) { VANILLA_MOB_EFFECTS.contains(str) }
+
+    public static val VANILLA_ENCHANTMENTS = #{
+        "protection",
+        "fire_protection",
+        "feather_falling",
+        "blast_protection",
+        "projectile_protection",
+        "respiration",
+        "aqua_affinity",
+        "thorns",
+        "depth_strider",
+        "frost_walker",
+        "binding_curse",
+        "soul_speed",
+        "sharpness",
+        "smite",
+        "bane_of_arthropods",
+        "knockback",
+        "fire_aspect",
+        "looting",
+        "sweeping",
+        "efficiency",
+        "silk_touch",
+        "unbreaking",
+        "fortune",
+        "power",
+        "punch",
+        "flame",
+        "infinity",
+        "luck_of_the_sea",
+        "lure",
+        "loyalty",
+        "impaling",
+        "riptide",
+        "channeling",
+        "multishot",
+        "quick_charge",
+        "piercing",
+        "mending",
+        "vanishing_curse"
+    }
+
+    def static isVanillaEnchantment(String str) { VANILLA_ENCHANTMENTS.contains(str) }
+
+    public static val VANILLA_ENTITY_TYPES = #{
+        "area_effect_cloud",
+        "armor_stand",
+        "arrow",
+        "bat",
+        "bee",
+        "blaze",
+        "boat",
+        "cat",
+        "cave_spider",
+        "chicken",
+        "cod",
+        "cow",
+        "creeper",
+        "donkey",
+        "dolphin",
+        "dragon_fireball",
+        "drowned",
+        "elder_guardian",
+        "end_crystal",
+        "ender_dragon",
+        "enderman",
+        "endermite",
+        "evoker_fangs",
+        "evoker",
+        "experience_orb",
+        "eye_of_ender",
+        "falling_block",
+        "firework_rocket",
+        "fox",
+        "ghast",
+        "giant",
+        "guardian",
+        "horse",
+        "husk",
+        "illusioner",
+        "item",
+        "item_frame",
+        "fireball",
+        "leash_knot",
+        "llama",
+        "llama_spit",
+        "magma_cube",
+        "minecart",
+        "chest_minecart",
+        "command_block_minecart",
+        "furnace_minecart",
+        "hopper_minecart",
+        "spawner_minecart",
+        "tnt_minecart",
+        "mule",
+        "mooshroom",
+        "ocelot",
+        "painting",
+        "panda",
+        "parrot",
+        "pig",
+        "pufferfish",
+        "polar_bear",
+        "tnt",
+        "rabbit",
+        "salmon",
+        "sheep",
+        "shulker",
+        "shulker_bullet",
+        "silverfish",
+        "skeleton",
+        "skeleton_horse",
+        "slime",
+        "small_fireball",
+        "snow_golem",
+        "snowball",
+        "spectral_arrow",
+        "spider",
+        "squid",
+        "stray",
+        "trader_llama",
+        "tropical_fish",
+        "turtle",
+        "egg",
+        "ender_pearl",
+        "experience_bottle",
+        "potion",
+        "trident",
+        "vex",
+        "villager",
+        "iron_golem",
+        "vindicator",
+        "pillager",
+        "wandering_trader",
+        "witch",
+        "wither",
+        "wither_skeleton",
+        "wither_skull",
+        "wolf",
+        "zombie",
+        "zombified_piglin",
+        "zombie_horse",
+        "zombie_villager",
+        "phantom",
+        "ravager",
+        "hoglin",
+        "piglin",
+        "strider",
+        "zoglin",
+        "lightning_bolt",
+        "player",
+        "fishing_bobber"
+    }
+
+    def static isVanillaEntityType(String str) { VANILLA_ENTITY_TYPES.contains(str) }
+
+    public static val VANILLA_POTIONS = #{
+        "empty",
+        "water",
+        "mundane",
+        "thick",
+        "awkward",
+        "night_vision",
+        "long_night_vision",
+        "invisibility",
+        "long_invisibility",
+        "leaping",
+        "long_leaping",
+        "strong_leaping",
+        "fire_resistance",
+        "long_fire_resistance",
+        "swiftness",
+        "long_swiftness",
+        "strong_swiftness",
+        "slowness",
+        "long_slowness",
+        "strong_slowness",
+        "turtle_master",
+        "long_turtle_master",
+        "strong_turtle_master",
+        "water_breathing",
+        "long_water_breathing",
+        "healing",
+        "strong_healing",
+        "harming",
+        "strong_harming",
+        "poison",
+        "long_poison",
+        "strong_poison",
+        "regeneration",
+        "long_regeneration",
+        "strong_regeneration",
+        "strength",
+        "long_strength",
+        "strong_strength",
+        "weakness",
+        "long_weakness",
+        "luck",
+        "slow_falling",
+        "long_slow_falling"
+    }
+
+    def static isVanillaPotion(String str) { VANILLA_POTIONS.contains(str) }
+
+    public static val VANILLA_BIOMES = #{
+        "ocean",
+        "plains",
+        "desert",
+        "mountains",
+        "forest",
+        "taiga",
+        "swamp",
+        "river",
+        "nether_wastes",
+        "the_end",
+        "frozen_ocean",
+        "frozen_river",
+        "snowy_tundra",
+        "snowy_mountains",
+        "mushroom_fields",
+        "mushroom_field_shore",
+        "beach",
+        "desert_hills",
+        "wooded_hills",
+        "taiga_hills",
+        "mountain_edge",
+        "jungle",
+        "jungle_hills",
+        "jungle_edge",
+        "deep_ocean",
+        "stone_shore",
+        "snowy_beach",
+        "birch_forest",
+        "birch_forest_hills",
+        "dark_forest",
+        "snowy_taiga",
+        "snowy_taiga_hills",
+        "giant_tree_taiga",
+        "giant_tree_taiga_hills",
+        "wooded_mountains",
+        "savanna",
+        "savanna_plateau",
+        "badlands",
+        "wooded_badlands_plateau",
+        "badlands_plateau",
+        "small_end_islands",
+        "end_midlands",
+        "end_highlands",
+        "end_barrens",
+        "warm_ocean",
+        "lukewarm_ocean",
+        "cold_ocean",
+        "deep_warm_ocean",
+        "deep_lukewarm_ocean",
+        "deep_cold_ocean",
+        "deep_frozen_ocean",
+        "the_void",
+        "sunflower_plains",
+        "desert_lakes",
+        "gravelly_mountains",
+        "flower_forest",
+        "taiga_mountains",
+        "swamp_hills",
+        "ice_spikes",
+        "modified_jungle",
+        "modified_jungle_edge",
+        "tall_birch_forest",
+        "tall_birch_hills",
+        "dark_forest_hills",
+        "snowy_taiga_mountains",
+        "giant_spruce_taiga",
+        "giant_spruce_taiga_hills",
+        "modified_gravelly_mountains",
+        "shattered_savanna",
+        "shattered_savanna_plateau",
+        "eroded_badlands",
+        "modified_wooded_badlands_plateau",
+        "modified_badlands_plateau",
+        "bamboo_jungle",
+        "bamboo_jungle_hills",
+        "soul_sand_valley",
+        "crimson_forest",
+        "warped_forest",
+        "basalt_deltas"
+    }
+
+    def static isVanillaBiome(String str) { VANILLA_BIOMES.contains(str) }
+
+    public static val VANILLA_STRUCTURE_FEATURES = #{
+        "mineshaft",
+        "pillager_outpost",
+        "fortress",
+        "stronghold",
+        "jungle_pyramid",
+        "ocean_ruin",
+        "desert_pyramid",
+        "igloo",
+        "swamp_hut",
+        "monument",
+        "endcity",
+        "mansion",
+        "buried_treasure",
+        "shipwreck",
+        "village",
+        "nether_fossil"
+    }
+
+    def static isVanillaStructureFeature(String str) { VANILLA_STRUCTURE_FEATURES.contains(str) }
+
+    public static val VANILLA_DIMENSION_TYPES = #{
+        "overworld",
+        "the_nether",
+        "the_end"
+    }
+
+    def static isVanillaDimensionType(String str) { VANILLA_DIMENSION_TYPES.contains(str) }
+
+    public static val VANILLA_ATTRIBUTES = #{
+        "generic.max_health",
+        "generic.follow_range",
+        "generic.knockback_resistance",
+        "generic.movement_speed",
+        "generic.flying_speed",
+        "generic.attack_damage",
+        "generic.attack_knockback",
+        "generic.attack_speed",
+        "generic.armor",
+        "generic.armor_toughness",
+        "generic.luck",
+        "zombie.spawn_reinforcements",
+        "horse.jump_strength"
+    }
+    
+    def static isVanillaAttribute(String str) { VANILLA_ATTRIBUTES.contains(str) }
+    
+    public static val VANILLA_MAP_ICONS = #{
+        "player",
+        "frame",
+        "red_marker",
+        "blue_marker",
+        "target_x",
+        "target_point",
+        "player_off_map",
+        "player_off_limits",
+        "mansion",
+        "monument",
+        "banner_white",
+        "banner_orange",
+        "banner_magenta",
+        "banner_light_blue",
+        "banner_yellow",
+        "banner_lime",
+        "banner_pink",
+        "banner_gray",
+        "banner_light_gray",
+        "banner_cyan",
+        "banner_purple",
+        "banner_blue",
+        "banner_brown",
+        "banner_green",
+        "banner_red",
+        "banner_black",
+        "red_x"
+    }
+ 
+    def static isVanillaMapIcon(String str) { VANILLA_MAP_ICONS.contains(str) }
+    
+    def private static readResource(String resourceName) {
+        val lines = new ArrayList<String>
+        try (val scanner = new Scanner(new BufferedInputStream(MinecraftData.getResourceAsStream("mcdata/" + resourceName)))) {
+            while (scanner.hasNext) {
+                lines += scanner.nextLine
+            }
+        }
+        return lines
+    }
+    
+    def private static loadStringSet(String resourceName) {
+        val lines = readResource(resourceName)
+        return new HashSet(lines).unmodifiableView
+    }
+    
+    def private static loadBlockstateMap(String resourceName) {
+        val lines = readResource(resourceName)
+        val map = new HashMap<String, Map<String, ? extends Property>>
+        for (var i = 0; i < lines.size;) {
+            val key = lines.get(i)
+            i++
+            val states = new HashMap<String, Property>
+            for (; i < lines.size && lines.get(i).startsWith("    "); i++) {
+                val line = lines.get(i)
+                val eq_idx = line.indexOf('=')
+                val stateName = line.substring(4, eq_idx)
+                val stateValue = line.substring(eq_idx+1)
+                val property = if (stateValue.startsWith('#')) {
+                    if (stateValue.charAt(1).isDigit) {
+                        val slice = stateValue.indexOf('..')
+                        val start = Integer.parseInt(stateValue.substring(1, slice))
+                        val end = Integer.parseInt(stateValue.substring(slice + 2))
+                        new IntProperty(start, end)
+                    } else {
+                        Properties.values.get(stateValue.substring(1))
+                    }
+                } else {
+                    new EnumProperty(newHashSet(stateValue.split('''\s+''')))
+                }
+            }
+            map.put(key, if (states.isEmpty) emptyMap() else states.unmodifiableView)
+        }
+    }
+    
+}
+
+interface Property {
+    def boolean isValid(String str)
+    def boolean isValid(LongRange range)
+}
+
+class BooleanProperty implements Property {
+    public static val INSTANCE = new BooleanProperty
+    
+    override isValid(String str) { str == "true" || str == "false" }
+    override isValid(LongRange range) { false }
+}
+
+@FinalFieldsConstructor
+class IntProperty implements Property {
+    public final int min
+    public final int max
+    
+    override isValid(String str) {
+        try {
+            val value = Integer.parseInt(str)
+            value >= min && value <= max
+        } catch (NumberFormatException e) {
+            false
+        }
+    }
+    
+    def dispatch isValid(ExactLongRange range) {
+        range.value >= min && range.value <= max
+    }
+    
+    def dispatch isValid(NormalLongRange range) {
+        (!range.minDefined || range.min >= min)
+        && (!range.maxDefined || range.max <= max)
+    }
+}
+
+@FinalFieldsConstructor
+class EnumProperty implements Property {
+    final Set<String> options
+    
+    override isValid(String str) { options.contains(str) }
+    override isValid(LongRange range) { false }
+    
+    def getOptions() { options.unmodifiableView }
+}

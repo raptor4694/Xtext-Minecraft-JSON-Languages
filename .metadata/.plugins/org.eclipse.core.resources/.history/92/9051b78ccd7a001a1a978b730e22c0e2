@@ -1,0 +1,175 @@
+grammar com.raptor.mcblockstate.Mcblockstate hidden(WS, ML_COMMENT, SL_COMMENT)
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate mcblockstate "http://www.raptor.com/mcblockstate/Mcblockstate"
+
+Blockstate:
+	->(VariantsBlockstate | MultipartBlockstate) | CustomBlockstate
+;
+
+VariantsBlockstate:
+	"variants" {VariantsBlockstate} '{'
+		//(variants+=Variant (->(',' variants+=Variant =>(',' variants+=Variant)* ','?) | variants+=Variant*))?
+		(variants+=Variant)*
+	'}'
+;
+
+Variant:
+	'[' 
+		//(properties+=BlockstateProperty (->(',' properties+=BlockstateProperty =>(',' properties+=BlockstateProperty)* ','?) | properties+=BlockstateProperty))?
+		(properties+=BlockstateProperty =>(',' properties+=BlockstateProperty)* ','?)?
+	']'
+	'='
+	models=ModelList
+;
+
+BlockstateProperty:
+	name=BlockstatePropertyValue '=' value=BlockstatePropertyValue
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MultipartBlockstate:
+	(cases+=Case)+
+;
+
+Case:
+	("when" '(' condition=CaseCondition ')')? "apply" models=ModelList
+;
+
+CaseCondition:
+	BaseCaseCondition ->('|' {OrCaseCondition.options+=current} options+=BaseCaseCondition ('|' options+=BaseCaseCondition)*)?
+;
+
+BaseCaseCondition returns CaseCondition:
+	'(' CaseCondition ')'
+	| {BaseCaseCondition} properties+=BlockstatePropertyPredicate ('&' properties+=BlockstatePropertyPredicate)*
+;
+
+BlockstatePropertyPredicate:
+	{NormalBlockstatePropertyPredicate} name=BlockstatePropertyValue ->(('='|'==') values+=BlockstatePropertyValue | "in" '(' (values+=BlockstatePropertyValue (',' values+=BlockstatePropertyValue)* ','?)? ')')
+	| {BooleanBlockstatePropertyPredicate} (inverted?='!')? name=BlockstatePropertyValue
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CustomBlockstate:
+	json=MCJsonObject
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//BlockstatePropertyName: Identifier | STRING;
+
+BlockstatePropertyValue: "true" | "false" | "null" | "variants" | "multipart" | "in" | "when" | "apply" | "x" | "y" | "uvlock" | ID | STRING | DOUBLE | LONG;
+
+ModelList:
+	('{' {ModelList} 
+		//(models+=Model =>(',' models+=Model)* ','?)?
+		(models+=Model)* 
+	->'}') 
+	| models+=Model
+;
+
+Model:
+	location=NamespacedLocation ->(weightDefined?='*' weight=ULONG)? ->('(' (
+		(xDefined?="x" '=' x=LONG)?
+		& (yDefined?="y" '=' y=LONG)?
+		& (uvlockDefined?="uvlock" '=' (uvlock?="true" | "false"))?	
+	) ')')?
+;
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MCJsonValue:
+	MCJsonObject
+	| MCJsonArray
+	| MCJsonString
+	| MCJsonNumber
+	| MCJsonBoolean
+	| MCJsonNull
+;
+
+MCJsonObject:
+	'{' {MCJsonObject}
+		(entries+=MCJsonEntry (',' entries+=MCJsonEntry)* ','?)?
+	'}'
+;
+
+MCJsonEntry:
+	name=STRING ':' value=MCJsonValue
+;
+
+MCJsonArray:
+	'[' {MCJsonArray}
+		(elements+=MCJsonValue (',' elements+=MCJsonValue)* ','?)?
+	']'
+;
+
+MCJsonString:
+	value=STRING
+;
+
+MCJsonNumber:
+	MCJsonIntegral
+	| MCJsonFloatingPoint
+;
+
+MCJsonIntegral:
+	value=LONG
+;
+
+MCJsonFloatingPoint:
+	value=DOUBLE
+;
+
+MCJsonBoolean:
+	(value?="true" | "false" {MCJsonBoolean})	
+;
+
+MCJsonNull:
+	"null" {MCJsonNull}
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NamespacedID hidden():
+    Key ->(':' Key)?
+;
+    
+NamespacedLocation hidden():
+    Key ->(':' Key)? ->('/' Key)* 
+;
+
+Key hidden(): Identifier ('.' Identifier)*;
+
+Identifier hidden(): ID | Keyword;
+
+Keyword:
+    "apply" | "false" | "multipart" | "null" | "true" | "uvlock" | "variants" | "when"
+;
+
+LONG returns ecore::ELong: ULONG | SLONG;
+
+terminal fragment SIGN: '+'|'-';
+terminal fragment DIGITS: ('0'..'9')+;
+terminal fragment EXPONENT: ('e'|'E') SIGN? DIGITS;
+terminal DOUBLE returns ecore::EDouble: SIGN? ('.' DIGITS EXPONENT? | DIGITS ('.' DIGITS EXPONENT? | EXPONENT));
+terminal ULONG returns ecore::ELong: DIGITS;
+terminal SLONG returns ecore::ELong: SIGN DIGITS;
+
+terminal STRING:
+	'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"'
+	//| "'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
+;
+terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+terminal ML_COMMENT: '/*' -> '*/';
+terminal SL_COMMENT: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS: (' '|'\t'|'\r'|'\n')+;
+
+terminal ANY_OTHER: .;
+

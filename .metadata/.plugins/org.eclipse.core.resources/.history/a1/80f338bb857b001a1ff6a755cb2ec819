@@ -1,0 +1,21 @@
+package com.raptor.mcloottable.tests
+
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.Set
+
+class GenerateMinecraftDataFiles {
+    
+    static val DIR = Paths.get('''C:\Users\flyin\Documents\Xtext\com.raptor.mcloot\src\com\raptor\mcloottable\util\''')
+    
+    def static void main(String[] args) {
+        
+        
+        
+    }
+    
+    def generate(Set<String> elements, String outputFileName) {
+        Files.write(DIR.resolve(outputFileName), elements)
+    }
+    
+}

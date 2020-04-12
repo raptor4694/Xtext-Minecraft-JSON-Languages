@@ -1,0 +1,2022 @@
+nether_brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+andesite_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+soul_fire_wall_torch
+    facing=#HORIZONTAL_FACES
+
+birch_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+spruce_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+dragon_head
+    rotation=#INT16
+
+brick_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+black_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+spruce_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+birch_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+prismarine_brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+yellow_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+skeleton_wall_skull
+    facing=#HORIZONTAL_FACES
+
+light_gray_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+scaffolding
+    distance=#0..7
+    bottom=#BOOLEAN
+    waterlogged=#BOOLEAN
+
+warped_pressure_plate
+    powered=#BOOLEAN
+
+magenta_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+large_fern
+    half=#DOOR_HALF
+
+jungle_leaves
+    distance=#1..7
+    persistent=#BOOLEAN
+
+cocoa
+    facing=#HORIZONTAL_FACES
+    age=#0..2
+
+chorus_plant
+    west=#BOOLEAN
+    east=#BOOLEAN
+    up=#BOOLEAN
+    down=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+light_blue_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+birch_pressure_plate
+    powered=#BOOLEAN
+
+warped_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+oak_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+acacia_log
+    axis=#AXIS
+
+tripwire
+    disarmed=#BOOLEAN
+    east=#BOOLEAN
+    powered=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+    attached=#BOOLEAN
+    west=#BOOLEAN
+
+dark_oak_pressure_plate
+    powered=#BOOLEAN
+
+lime_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+cut_red_sandstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+blast_furnace
+    facing=#HORIZONTAL_FACES
+    lit=#BOOLEAN
+
+daylight_detector
+    inverted=#BOOLEAN
+    power=#INT16
+
+bone_block
+    axis=#AXIS
+
+dead_tube_coral_fan
+    waterlogged=#BOOLEAN
+
+prismarine_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+birch_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+warped_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+attached_pumpkin_stem
+    facing=#HORIZONTAL_FACES
+
+wheat
+    age=#0..7
+
+end_rod
+    facing=#ALL_FACES
+
+black_wall_banner
+    facing=#HORIZONTAL_FACES
+
+acacia_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+white_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+piston
+    facing=#ALL_FACES
+    extended=#BOOLEAN
+
+cobblestone_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+white_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+ender_chest
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+tube_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+kelp
+    age=#0..25
+
+moving_piston
+    type=#PISTON_STATUS
+    facing=#ALL_FACES
+
+sunflower
+    half=#DOOR_HALF
+
+brown_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+end_stone_brick_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+red_mushroom_block
+    west=#BOOLEAN
+    east=#BOOLEAN
+    up=#BOOLEAN
+    down=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+crimson_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+jack_o_lantern
+    facing=#HORIZONTAL_FACES
+
+stripped_oak_log
+    axis=#AXIS
+
+dead_bubble_coral_fan
+    waterlogged=#BOOLEAN
+
+soul_fire_lantern
+    hanging=#BOOLEAN
+
+furnace
+    facing=#HORIZONTAL_FACES
+    lit=#BOOLEAN
+
+oak_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+redstone_ore
+    lit=#BOOLEAN
+
+horn_coral_fan
+    waterlogged=#BOOLEAN
+
+stripped_warped_hyphae
+    axis=#AXIS
+
+farmland
+    moisture=#0..7
+
+stone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+pink_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+rose_bush
+    half=#DOOR_HALF
+
+iron_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+stone_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+stone_pressure_plate
+    powered=#BOOLEAN
+
+iron_bars
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+smooth_red_sandstone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+stripped_birch_wood
+    axis=#AXIS
+
+green_banner
+    rotation=#INT16
+
+structure_block
+    mode=save data corner load
+
+light_gray_banner
+    rotation=#INT16
+
+sticky_piston
+    facing=#ALL_FACES
+    extended=#BOOLEAN
+
+dark_oak_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+light_gray_shulker_box
+    facing=#ALL_FACES
+
+frosted_ice
+    age=#0..3
+
+yellow_wall_banner
+    facing=#HORIZONTAL_FACES
+
+dark_oak_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+polished_granite_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+cyan_wall_banner
+    facing=#HORIZONTAL_FACES
+
+birch_wood
+    axis=#AXIS
+
+smooth_sandstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+crimson_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+mushroom_stem
+    west=#BOOLEAN
+    east=#BOOLEAN
+    up=#BOOLEAN
+    down=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+dead_tube_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+purple_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+wither_skeleton_skull
+    rotation=#INT16
+
+acacia_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+fire_coral_fan
+    waterlogged=#BOOLEAN
+
+beehive
+    facing=#HORIZONTAL_FACES
+    honey_level=#0..5
+
+polished_basalt
+    axis=#AXIS
+
+dispenser
+    facing=#ALL_FACES
+    triggered=#BOOLEAN
+
+pink_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+bubble_coral
+    waterlogged=#BOOLEAN
+
+lilac
+    half=#DOOR_HALF
+
+chorus_flower
+    age=#0..5
+
+stripped_crimson_stem
+    axis=#AXIS
+
+redstone_lamp
+    lit=#BOOLEAN
+
+polished_blackstone_brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+spruce_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+jungle_wood
+    axis=#AXIS
+
+heavy_weighted_pressure_plate
+    power=#INT16
+
+dead_brain_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+red_sandstone_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+stripped_crimson_hyphae
+    axis=#AXIS
+
+birch_leaves
+    distance=#1..7
+    persistent=#BOOLEAN
+
+acacia_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+crimson_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+stripped_dark_oak_wood
+    axis=#AXIS
+
+acacia_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+warped_stem
+    axis=#AXIS
+
+mossy_cobblestone_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+black_shulker_box
+    facing=#ALL_FACES
+
+polished_blackstone_pressure_plate
+    powered=#BOOLEAN
+
+chipped_anvil
+    facing=#HORIZONTAL_FACES
+
+brain_coral_fan
+    waterlogged=#BOOLEAN
+
+polished_blackstone_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+red_nether_brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+sugar_cane
+    age=#INT16
+
+tall_grass
+    half=#DOOR_HALF
+
+tall_seagrass
+    half=#DOOR_HALF
+
+acacia_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+purpur_pillar
+    axis=#AXIS
+
+red_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+chain_command_block
+    conditional=#BOOLEAN
+    facing=#ALL_FACES
+
+acacia_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+dropper
+    facing=#ALL_FACES
+    triggered=#BOOLEAN
+
+weeping_vines
+    age=#0..25
+
+jungle_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+light_blue_banner
+    rotation=#INT16
+
+bubble_column
+    drag=#BOOLEAN
+
+purple_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+polished_blackstone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+wither_skeleton_wall_skull
+    facing=#HORIZONTAL_FACES
+
+acacia_sapling
+    stage=#0..1
+
+orange_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+lime_wall_banner
+    facing=#HORIZONTAL_FACES
+
+magenta_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+blackstone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+spruce_wood
+    axis=#AXIS
+
+black_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+cyan_shulker_box
+    facing=#ALL_FACES
+
+orange_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+bell
+    attachment=single_wall ceiling double_wall floor
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+
+warped_hyphae
+    axis=#AXIS
+
+nether_portal
+    axis=x z
+
+mossy_stone_brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+acacia_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+stripped_jungle_log
+    axis=#AXIS
+
+jigsaw
+    orientation=up_east up_south west_up up_north north_up down_west down_south down_east south_up up_west east_up down_north
+
+blue_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+tnt
+    unstable=#BOOLEAN
+
+brain_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+detector_rail
+    powered=#BOOLEAN
+    shape=#RAIL_ORIENTATION
+
+pink_shulker_box
+    facing=#ALL_FACES
+
+mossy_stone_brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+damaged_anvil
+    facing=#HORIZONTAL_FACES
+
+anvil
+    facing=#HORIZONTAL_FACES
+
+jungle_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+dark_prismarine_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+conduit
+    waterlogged=#BOOLEAN
+
+oak_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+player_head
+    rotation=#INT16
+
+dark_oak_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+polished_blackstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+magenta_banner
+    rotation=#INT16
+
+polished_andesite_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+dark_oak_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+polished_blackstone_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+birch_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+blue_banner
+    rotation=#INT16
+
+lantern
+    hanging=#BOOLEAN
+
+oak_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+comparator
+    mode=compare subtract
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+
+gray_shulker_box
+    facing=#ALL_FACES
+
+black_banner
+    rotation=#INT16
+
+blackstone_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+spruce_pressure_plate
+    powered=#BOOLEAN
+
+spruce_sapling
+    stage=#0..1
+
+spruce_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+acacia_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+birch_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+stripped_acacia_wood
+    axis=#AXIS
+
+crimson_hyphae
+    axis=#AXIS
+
+diorite_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+crimson_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+brain_coral
+    waterlogged=#BOOLEAN
+
+warped_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+light_blue_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+stonecutter
+    facing=#HORIZONTAL_FACES
+
+cyan_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+sea_pickle
+    pickles=#1..4
+    waterlogged=#BOOLEAN
+
+carved_pumpkin
+    facing=#HORIZONTAL_FACES
+
+granite_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+redstone_torch
+    lit=#BOOLEAN
+
+wall_torch
+    facing=#HORIZONTAL_FACES
+
+sandstone_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+lime_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+dead_brain_coral
+    waterlogged=#BOOLEAN
+
+polished_granite_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+dead_horn_coral
+    waterlogged=#BOOLEAN
+
+dark_oak_wood
+    axis=#AXIS
+
+crimson_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+blue_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+lever
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+light_blue_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+dead_fire_coral_fan
+    waterlogged=#BOOLEAN
+
+acacia_pressure_plate
+    powered=#BOOLEAN
+
+andesite_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+oak_log
+    axis=#AXIS
+
+dark_oak_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+snow
+    layers=#1..8
+
+polished_andesite_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+powered_rail
+    powered=#BOOLEAN
+    shape=#RAIL_ORIENTATION
+
+granite_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+jungle_pressure_plate
+    powered=#BOOLEAN
+
+stripped_spruce_log
+    axis=#AXIS
+
+crimson_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+cyan_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+smooth_quartz_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+cyan_banner
+    rotation=#INT16
+
+crimson_stem
+    axis=#AXIS
+
+warped_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+stripped_acacia_log
+    axis=#AXIS
+
+brewing_stand
+    has_bottle_0=#BOOLEAN
+    has_bottle_1=#BOOLEAN
+    has_bottle_2=#BOOLEAN
+
+stripped_oak_wood
+    axis=#AXIS
+
+oak_pressure_plate
+    powered=#BOOLEAN
+
+bubble_coral_fan
+    waterlogged=#BOOLEAN
+
+cyan_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+basalt
+    axis=#AXIS
+
+player_wall_head
+    facing=#HORIZONTAL_FACES
+
+jungle_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+oak_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+orange_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+petrified_oak_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+horn_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+orange_banner
+    rotation=#INT16
+
+tube_coral
+    waterlogged=#BOOLEAN
+
+dead_fire_coral
+    waterlogged=#BOOLEAN
+
+stone_brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+ladder
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+purple_wall_banner
+    facing=#HORIZONTAL_FACES
+
+pink_wall_banner
+    facing=#HORIZONTAL_FACES
+
+trapped_chest
+    type=#CHEST_SHAPE
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+brown_shulker_box
+    facing=#ALL_FACES
+
+end_stone_brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+warped_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+dead_bubble_coral
+    waterlogged=#BOOLEAN
+
+oak_sapling
+    stage=#0..1
+
+oak_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+zombie_head
+    rotation=#INT16
+
+spruce_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+dead_tube_coral
+    waterlogged=#BOOLEAN
+
+brown_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+nether_brick_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+horn_coral
+    waterlogged=#BOOLEAN
+
+white_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+birch_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+observer
+    powered=#BOOLEAN
+    facing=#ALL_FACES
+
+granite_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+sandstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+red_wall_banner
+    facing=#HORIZONTAL_FACES
+
+cake
+    bites=#0..6
+
+podzol
+    snowy=#BOOLEAN
+
+fire
+    west=#BOOLEAN
+    east=#BOOLEAN
+    up=#BOOLEAN
+    south=#BOOLEAN
+    age=#INT16
+    north=#BOOLEAN
+
+gray_wall_banner
+    facing=#HORIZONTAL_FACES
+
+acacia_leaves
+    distance=#1..7
+    persistent=#BOOLEAN
+
+yellow_shulker_box
+    facing=#ALL_FACES
+
+brown_wall_banner
+    facing=#HORIZONTAL_FACES
+
+repeating_command_block
+    conditional=#BOOLEAN
+    facing=#ALL_FACES
+
+brown_banner
+    rotation=#INT16
+
+gray_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+dead_bubble_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+pink_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+bamboo
+    leaves=small none large
+    stage=#0..1
+    age=#0..1
+
+orange_wall_banner
+    facing=#HORIZONTAL_FACES
+
+acacia_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+polished_blackstone_brick_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+peony
+    half=#DOOR_HALF
+
+dark_oak_log
+    axis=#AXIS
+
+purple_shulker_box
+    facing=#ALL_FACES
+
+red_nether_brick_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+stone_brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+jungle_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+lectern
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    has_book=#BOOLEAN
+
+cactus
+    age=#INT16
+
+spruce_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+warped_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+carrots
+    age=#0..7
+
+spruce_log
+    axis=#AXIS
+
+gray_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+mossy_cobblestone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+end_stone_brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+birch_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+red_sandstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+light_gray_wall_banner
+    facing=#HORIZONTAL_FACES
+
+light_gray_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+soul_campfire
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+    signal_fire=#BOOLEAN
+    lit=#BOOLEAN
+
+brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+spruce_leaves
+    distance=#1..7
+    persistent=#BOOLEAN
+
+green_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+repeater
+    facing=#HORIZONTAL_FACES
+    delay=#1..4
+    locked=#BOOLEAN
+    powered=#BOOLEAN
+
+mycelium
+    snowy=#BOOLEAN
+
+spruce_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+red_nether_brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+stripped_birch_log
+    axis=#AXIS
+
+oak_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+hay_block
+    axis=#AXIS
+
+green_shulker_box
+    facing=#ALL_FACES
+
+dark_oak_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+blue_shulker_box
+    facing=#ALL_FACES
+
+smoker
+    facing=#HORIZONTAL_FACES
+    lit=#BOOLEAN
+
+loom
+    facing=#HORIZONTAL_FACES
+
+andesite_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+creeper_wall_head
+    facing=#HORIZONTAL_FACES
+
+nether_wart
+    age=#0..3
+
+cobblestone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+oak_leaves
+    distance=#1..7
+    persistent=#BOOLEAN
+
+composter
+    level=#0..8
+
+white_wall_banner
+    facing=#HORIZONTAL_FACES
+
+chest
+    type=#CHEST_SHAPE
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+warped_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+stone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+dead_horn_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+end_portal_frame
+    eye=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+
+grindstone
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+dark_oak_leaves
+    distance=#1..7
+    persistent=#BOOLEAN
+
+lime_shulker_box
+    facing=#ALL_FACES
+
+jungle_sapling
+    stage=#0..1
+
+dark_prismarine_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+jungle_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+creeper_head
+    rotation=#INT16
+
+sweet_berry_bush
+    age=#0..3
+
+gray_banner
+    rotation=#INT16
+
+potatoes
+    age=#0..7
+
+jungle_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+jukebox
+    has_record=#BOOLEAN
+
+green_wall_banner
+    facing=#HORIZONTAL_FACES
+
+blackstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+purple_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+birch_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+lava
+    level=#INT16
+
+jungle_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+fire_coral
+    waterlogged=#BOOLEAN
+
+magenta_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+gray_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+red_sandstone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+cobblestone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+brown_mushroom_block
+    west=#BOOLEAN
+    east=#BOOLEAN
+    up=#BOOLEAN
+    down=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+melon_stem
+    age=#0..7
+
+target
+    power=#INT16
+
+nether_brick_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+crimson_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+dark_oak_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+prismarine_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+cauldron
+    level=#0..3
+
+pink_banner
+    rotation=#INT16
+
+dragon_wall_head
+    facing=#HORIZONTAL_FACES
+
+piston_head
+    type=#PISTON_STATUS
+    facing=#ALL_FACES
+    short=#BOOLEAN
+
+sandstone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+white_shulker_box
+    facing=#ALL_FACES
+
+prismarine_brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+lime_banner
+    rotation=#INT16
+
+diorite_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+dark_oak_sapling
+    stage=#0..1
+
+polished_diorite_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+bee_nest
+    facing=#HORIZONTAL_FACES
+    honey_level=#0..5
+
+smooth_red_sandstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+cut_sandstone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+tube_coral_fan
+    waterlogged=#BOOLEAN
+
+grass_block
+    snowy=#BOOLEAN
+
+lime_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+black_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+nether_brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+command_block
+    conditional=#BOOLEAN
+    facing=#ALL_FACES
+
+dead_fire_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+dead_horn_coral_fan
+    waterlogged=#BOOLEAN
+
+jungle_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+bubble_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+light_blue_shulker_box
+    facing=#ALL_FACES
+
+smooth_quartz_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+stone_brick_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+respawn_anchor
+    charges=#0..4
+
+red_banner
+    rotation=#INT16
+
+blue_wall_banner
+    facing=#HORIZONTAL_FACES
+
+smooth_sandstone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+acacia_wood
+    axis=#AXIS
+
+magenta_shulker_box
+    facing=#ALL_FACES
+
+redstone_wire
+    west=#REDSTONE_WIRE_DIRECTION
+    east=#REDSTONE_WIRE_DIRECTION
+    power=#INT16
+    south=#REDSTONE_WIRE_DIRECTION
+    north=#REDSTONE_WIRE_DIRECTION
+
+stripped_dark_oak_log
+    axis=#AXIS
+
+attached_melon_stem
+    facing=#HORIZONTAL_FACES
+
+red_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+yellow_banner
+    rotation=#INT16
+
+barrel
+    facing=#ALL_FACES
+    open=#BOOLEAN
+
+dead_brain_coral_fan
+    waterlogged=#BOOLEAN
+
+pumpkin_stem
+    age=#0..7
+
+prismarine_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+purple_banner
+    rotation=#INT16
+
+oak_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+quartz_pillar
+    axis=#AXIS
+
+polished_diorite_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+smooth_stone_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+oak_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+stripped_jungle_wood
+    axis=#AXIS
+
+crimson_trapdoor
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+mossy_cobblestone_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+birch_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+orange_shulker_box
+    facing=#ALL_FACES
+
+iron_door
+    facing=#HORIZONTAL_FACES
+    hinge=left right
+    half=#DOOR_HALF
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+warped_fence_gate
+    facing=#HORIZONTAL_FACES
+    in_wall=#BOOLEAN
+    powered=#BOOLEAN
+    open=#BOOLEAN
+
+beetroots
+    age=#0..3
+
+stripped_warped_stem
+    axis=#AXIS
+
+campfire
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+    signal_fire=#BOOLEAN
+    lit=#BOOLEAN
+
+vine
+    west=#BOOLEAN
+    east=#BOOLEAN
+    up=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+quartz_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+dark_oak_fence
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+light_gray_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+rail
+    shape=ascending_north south_west north_east ascending_south east_west north_west ascending_east south_east north_south ascending_west
+
+white_banner
+    rotation=#INT16
+
+polished_blackstone_brick_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+turtle_egg
+    eggs=#1..4
+    hatch=#0..2
+
+twisting_vines
+    age=#0..25
+
+water
+    level=#INT16
+
+red_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+oak_wood
+    axis=#AXIS
+
+birch_sapling
+    stage=#0..1
+
+red_shulker_box
+    facing=#ALL_FACES
+
+brick_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+brown_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+diorite_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+tripwire_hook
+    attached=#BOOLEAN
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+
+stripped_spruce_wood
+    axis=#AXIS
+
+crimson_wall_sign
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+note_block
+    powered=#BOOLEAN
+    note=#0..24
+    instrument=xylophone banjo harp bit bell guitar flute snare bass cow_bell iron_xylophone didgeridoo hat pling basedrum chime
+
+skeleton_skull
+    rotation=#INT16
+
+yellow_bed
+    facing=#HORIZONTAL_FACES
+    occupied=#BOOLEAN
+    part=#BED_HALF
+
+purpur_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+jungle_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+green_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+spruce_button
+    powered=#BOOLEAN
+    facing=#HORIZONTAL_FACES
+    face=#BUTTON_FACE
+
+zombie_wall_head
+    facing=#HORIZONTAL_FACES
+
+jungle_log
+    axis=#AXIS
+
+dark_oak_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+light_blue_wall_banner
+    facing=#HORIZONTAL_FACES
+
+birch_log
+    axis=#AXIS
+
+light_weighted_pressure_plate
+    power=#INT16
+
+warped_sign
+    rotation=#INT16
+    waterlogged=#BOOLEAN
+
+spruce_stairs
+    facing=#HORIZONTAL_FACES
+    half=#BLOCK_HALF
+    waterlogged=#BOOLEAN
+    shape=#STAIR_SHAPE
+
+activator_rail
+    powered=#BOOLEAN
+    shape=#RAIL_ORIENTATION
+
+shulker_box
+    facing=#ALL_FACES
+
+crimson_pressure_plate
+    powered=#BOOLEAN
+
+magenta_wall_banner
+    facing=#HORIZONTAL_FACES
+
+green_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+yellow_glazed_terracotta
+    facing=#HORIZONTAL_FACES
+
+blue_stained_glass_pane
+    west=#BOOLEAN
+    east=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#BOOLEAN
+    north=#BOOLEAN
+
+quartz_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+fire_coral_wall_fan
+    facing=#HORIZONTAL_FACES
+    waterlogged=#BOOLEAN
+
+mossy_stone_brick_wall
+    west=#WALL_TYPE
+    east=#WALL_TYPE
+    up=#BOOLEAN
+    waterlogged=#BOOLEAN
+    south=#WALL_TYPE
+    north=#WALL_TYPE
+
+purpur_slab
+    type=#SLAB_TYPE
+    waterlogged=#BOOLEAN
+
+redstone_wall_torch
+    facing=#HORIZONTAL_FACES
+    lit=#BOOLEAN
+
+hopper
+    facing=west east down south north
+    enabled=#BOOLEAN
+

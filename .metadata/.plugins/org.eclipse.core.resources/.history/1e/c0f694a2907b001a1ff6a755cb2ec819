@@ -1,0 +1,11 @@
+package com.raptor.mcloottable.mcloot.impl
+
+import org.eclipse.emf.ecore.EClass
+
+class MclootFactoryImpl2 extends MclootFactoryImpl {
+    
+    override createEntityFlags() {
+        new EntityFlagsImpl2
+    }
+    
+}

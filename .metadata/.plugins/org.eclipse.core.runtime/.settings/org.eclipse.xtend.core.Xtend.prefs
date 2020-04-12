@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.number.color=100,100,100
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.abstract.class.color=0,128,255
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.class.color=0,128,255
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.enum.color=0,128,0
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.interface.color=0,128,255
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.local.final.variable.color=106,62,62
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.local.final.variable.declaration.color=
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.local.variable.color=106,62,62
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.parameter.variable.color=0,96,96
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.static.final.field.color=255,0,0
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.static.final.field.style=1
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.type.variable.color=0,128,0
+org.eclipse.xtend.core.Xtend.syntaxColorer.tokenStyles.xbase.type.variable.style=1

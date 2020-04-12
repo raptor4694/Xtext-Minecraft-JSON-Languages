@@ -1,0 +1,1299 @@
+grammar com.raptor.mcloottable.Mcloot hidden(WS, ML_COMMENT, SL_COMMENT)
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate mcloot "http://www.raptor.com/mcloottable/Mcloot"
+
+LootTable:
+	{LootTable}
+	(
+		(typeDefined?="type" '=' type=EnumLootTableType)?
+		(poolsDefined?="pools" '{' (pools+=LootPool)* '}')?
+	)
+;
+
+LootPool:
+	(=>(conditionsDefined?="if" '(') conditions+=LootCondition ('&' conditions+=LootCondition)* ')')?
+	name=Identifier '{' (
+		(rollsDefined?="rolls" '=' rolls=ULongRange)
+		& (entriesDefined?="entries" '{' (entries+=LootEntry)* '}')
+        & (bonusRollsDefined?="bonus_rolls" '=' bonusRolls=DoubleRange)?
+		& (functionsDefined?="functions" '{' (functions+=LootFunction)* '}')?
+//		& (conditionsDefined?="conditions" '{' (conditions+=LootCondition)* '}')?
+	) '}'
+;
+
+LootEntry:
+	(=>(conditionsDefined?="if" '(') conditions+=LootCondition ('&' conditions+=LootCondition)* ')')?
+
+	(
+	
+	type="tag" name=NamespacedLocation LootEntryRest '{' (
+		(qualityDefined?="quality" '=' quality=LONG)?
+		& (expandDefined?="expand" '=' expand=BOOLEAN)?
+		& (functionsDefined?="functions" '{' (functions+=LootFunction)* '}')?
+//		& (conditionsDefined?="conditions" '{' (conditions+=LootCondition)* '}')?
+	) '}'
+    | (
+    	type="item" name=NamespacedID
+    	| type="loot_table" name=NamespacedLocation
+    	| type="dynamic" name=("contents" | "self")
+    ) LootEntryRest '{' (
+    	(qualityDefined?="quality" '=' quality=LONG)?
+    	& (functionsDefined?="functions" '{' (functions+=LootFunction)* '}')?
+//        & (conditionsDefined?="conditions" '{' (conditions+=LootCondition)* '}')?
+    ) '}'
+    | type=("group" | "alternatives" | "sequence") name=Identifier? LootEntryRest '{' (
+    	(childrenDefined?="children" '{' (children+=LootEntry)* '}')
+    	& (qualityDefined?="quality" '=' quality=LONG)?
+        & (functionsDefined?="functions" '{' (functions+=LootFunction)* '}')?
+//        & (conditionsDefined?="conditions" '{' (conditions+=LootCondition)* '}')?
+    ) '}'
+    
+    )
+;
+
+fragment LootEntryRest returns LootEntry:
+	(weightDefined?='*' weight=ULONG)? ('->' entryName=(Identifier | STRING))?
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+LootFunction:
+	{LootFunctionWithConditions} (=>(conditionsDefined?="if" '(') conditions+=LootCondition ('&' conditions+=LootCondition)* ')') function=LootFunction0
+	| LootFunction0
+;
+
+LootFunction0 returns LootFunction:
+	ApplyBonusLootFunction
+	| CopyNameLootFunction
+	| CopyNBTLootFunction
+	| CopyStateLootFunction
+	| EnchantRandomlyLootFunction
+	| EnchantWithLevelsLootFunction
+	| ExplorationMapLootFunction
+	| ExplosionDecayLootFunction
+	| FurnaceSmeltLootFunction
+	| FillPlayerHeadLootFunction
+	| LimitCountLootFunction
+	| LootingEnchantLootFunction
+	| SetAttributesLootFunction
+	| SetContentsLootFunction
+	| SetCountLootFunction
+	| SetDamageLootFunction
+	| SetLoreLootFunction
+	| SetNameLootFunction
+	| SetNBTLootFunction
+	| SetStewEffectLootFunction
+;
+
+ApplyBonusLootFunction:
+	id="apply_bonus" '(' (
+		=>("enchantment" '=') enchantment=EnchantmentID (
+            (',' "formula" '=' formula=EnumBonusFormula)
+            & (',' extraDefined?="extra" '=' extra=LONG)?
+            & (',' probabilityDefined?="probability" '=' probability=(PERCENTAGE | NUMBER))?
+            & (',' bonusMultiplierDefined?="bonusMultiplier" '=' bonusMultiplier=NUMBER)?
+        )
+        |
+        =>("formula" '=') formula=EnumBonusFormula (
+            (',' "enchantment" '=' enchantment=EnchantmentID)
+            & (',' extraDefined?="extra" '=' extra=LONG)?
+            & (',' probabilityDefined?="probability" '=' probability=(PERCENTAGE | NUMBER))?
+            & (',' bonusMultiplierDefined?="bonusMultiplier" '=' bonusMultiplier=NUMBER)?
+        )
+        |
+		enchantment=EnchantmentID (
+			',' formula=EnumBonusFormula (
+				(
+					(',' extraDefined?="extra" '=' extra=LONG)
+					& (',' probabilityDefined?="probability" '=' probability=(PERCENTAGE | NUMBER))
+				)
+				|
+				',' bonusMultiplierDefined?="bonusMultiplier" '=' bonusMultiplier=NUMBER
+			)?
+		)
+	) ')'
+//	id="apply_bonus" '(' (
+//		("enchantment" '=')? enchantment=EnchantmentID (
+//			(
+//				(',' "formula" '=' formula="binomial_with_bonus_count")
+//				& (',' "extra" '=' extra=LONG)
+//				& (',' "probability" '=' probability=(PERCENTAGE | NUMBER))
+//			)
+//			|
+//			',' formula="binomial_with_bonus_count" (
+//				(
+//					(',' "extra" '=' extra=LONG)
+//                    & (',' "probability" '=' probability=(PERCENTAGE | NUMBER))
+//				)
+//				| ',' extra=LONG ',' ("probability" '=')? probability=(PERCENTAGE | NUMBER)
+//			)
+//			|
+//			(
+//				(',' "formula" '=' formula="uniform_bonus_count")
+//				& (',' "bonusMultiplier" '=' bonusMultiplier=NUMBER)
+//			)
+//			|
+//			',' formula="uniform_bonus_count" ',' ("bonusMultiplier" '=')? bonusMultiplier=NUMBER
+//			|
+//			',' ("formula" '=')? formula="ore_drops"
+//		)
+//		|
+//		"formula" '=' (
+//			formula="binomial_with_bonus_count" (
+//				(',' "enchantment" '=' enchantment=EnchantmentID)
+//                & (',' "extra" '=' extra=LONG)
+//                & (',' "probability" '=' probability=(PERCENTAGE | NUMBER))
+//            )
+//            | formula="uniform_bonus_count" (
+//            	(',' "enchantment" '=' enchantment=EnchantmentID)
+//            	& (',' "bonusMultiplier" '=' bonusMultiplier=NUMBER)
+//            )
+//            | formula="ore_drops" ',' "enchantment" '=' enchantment=EnchantmentID
+//		)
+//	) ')'
+;
+
+CopyNameLootFunction:
+	id="copy_name" '(' source=EnumNBTSource? ')'
+;
+
+CopyNBTLootFunction:
+	id="copy_nbt" '(' source=EnumNBTSource ')' '{' (ops+=NBTOperation)* '}'
+;
+
+NBTOperation:
+	AppendNBTOperation
+	| ReplaceNBTOperation
+	| MergeNBTOperation
+;
+
+AppendNBTOperation:
+	id="append" source=NBTPath "to" target=NBTPath
+;
+
+ReplaceNBTOperation:
+	id="replace" target=NBTPath "with" source=NBTPath
+;
+
+MergeNBTOperation:
+	id="merge" source=NBTPath "into" target=NBTPath
+;
+
+CopyStateLootFunction:
+	id="copy_state" '(' block=NamespacedID '[' (properties+=BlockstateID (',' properties+=BlockstateID)*)? ']' ')'
+;
+
+EnchantRandomlyLootFunction:
+	id="enchant_randomly" '(' (enchantments+=EnchantmentID (',' enchantments+=EnchantmentID)*)? ')'
+;
+
+EnchantWithLevelsLootFunction:
+	id="enchant_with_levels" '(' (
+		->treasureDefined?="treasure" '=' treasure=BOOLEAN ',' "levels" '=' levels=ULongRange
+		| ("levels" '=')? levels=ULongRange (',' treasureDefined?="treasure" '=' treasure=BOOLEAN)?
+	) ')'
+;
+
+ExplorationMapLootFunction:
+	id="exploration_map" '(' (
+		=>("destination" '=') destination=Feature (
+			(',' "decoration" '=' decoration=Identifier)
+            & (',' zoomDefined?="zoom" '=' zoom=ULONG)?
+            & (',' searchRadiusDefined?="search_radius" '=' searchRadius=ULONG)?
+            & (',' skipExistingChunksDefined?="skip_existing_chunks" '=' skipExistingChunks=BOOLEAN)?
+		)
+		|
+		=>("decoration" '=') decoration=Identifier (
+			(',' "destination" '=' destination=Feature)
+			& (',' zoomDefined?="zoom" '=' zoom=ULONG)?
+            & (',' searchRadiusDefined?="search_radius" '=' searchRadius=ULONG)?
+            & (',' skipExistingChunksDefined?="skip_existing_chunks" '=' skipExistingChunks=BOOLEAN)?
+		)
+		|
+		=>(zoomDefined?="zoom" '=') zoom=ULONG (
+			(',' "destination" '=' destination=Feature)
+			& (',' "decoration" '=' decoration=Identifier)
+			& (',' searchRadiusDefined?="search_radius" '=' searchRadius=ULONG)?
+            & (',' skipExistingChunksDefined?="skip_existing_chunks" '=' skipExistingChunks=BOOLEAN)?
+		)
+		|
+		=>(searchRadiusDefined?="search_radius" '=') searchRadius=ULONG (
+			(',' "destination" '=' destination=Feature)
+            & (',' "decoration" '=' decoration=Identifier)
+            & (',' zoomDefined?="zoom" '=' zoom=ULONG)?
+            & (',' skipExistingChunksDefined?="skip_existing_chunks" '=' skipExistingChunks=BOOLEAN)?
+		)
+		|
+		=>(skipExistingChunksDefined?="skip_existing_chunks" '=') skipExistingChunks=BOOLEAN (
+			(',' "destination" '=' destination=Feature)
+            & (',' "decoration" '=' decoration=Identifier)
+            & (',' zoomDefined?="zoom" '=' zoom=ULONG)?
+            & (',' searchRadiusDefined?="search_radius" '=' searchRadius=ULONG)?
+		)
+		|
+		destination=Feature (
+			(
+				(',' "decoration" '=' decoration=Identifier)
+                & (',' zoomDefined?="zoom" '=' zoom=ULONG)?
+                & (',' searchRadiusDefined?="search_radius" '=' searchRadius=ULONG)?
+                & (',' skipExistingChunksDefined?="skip_existing_chunks" '=' skipExistingChunks=BOOLEAN)?
+			)
+			|
+			',' decoration=Identifier (
+				(',' zoomDefined?="zoom" '=' zoom=ULONG)?
+                & (',' searchRadiusDefined?="search_radius" '=' searchRadius=ULONG)?
+                & (',' skipExistingChunksDefined?="skip_existing_chunks" '=' skipExistingChunks=BOOLEAN)?
+			)
+		)
+	) ')'
+//	'{' (
+//		("destination" '=' destination=Key)
+//		& ("decoration" '=' decoration=Key)
+//		& (zoomDefined?="zoom" '=' zoom=ULONG)?
+//		& (searchRadiusDefined?="search_radius" '=' searchRadius=ULONG)?
+//		& (skipExistingChunksDefined?="skip_existing_chunks" '=' (skipExistingChunks?="true" | "false"))?
+//	) '}'
+;
+
+ExplosionDecayLootFunction:
+	id="explosion_decay" '(' ')'
+;
+
+FurnaceSmeltLootFunction:
+	id="furnace_smelt" '(' ')'
+;
+
+FillPlayerHeadLootFunction:
+	id="fill_player_head" '(' entity=EnumEntitySource ')' 
+;
+
+LimitCountLootFunction:
+	id="limit" '(' limit=ULongRange ')'
+;
+
+LootingEnchantLootFunction:
+	id="looting_enchant" '(' (
+		=>(limitDefined?="limit" '=') limit=ULONG ',' "count" '=' count=ULongRange
+		|
+		("count" '=')? count=ULongRange (',' limitDefined?="limit" '=' limit=ULONG)?
+	)')'
+;
+
+SetAttributesLootFunction:
+	id="set_attributes" '{' (modifiers+=AttributeModifier)* '}'
+;
+
+AttributeModifier:
+	id=AttributeModifierType '{' (
+		("operation" '=' operation=EnumAttributeModifierOperation)
+		& ("amount" '=' amount=DoubleRange)
+        & ("name" '=' attributeName=Key)?
+		& ("id" '=' uuid=UUID)?
+		& (slotDefined?="slot" (singleSlot?='=' slots+=EnumEquipmentSlot | '{' (slots+=EnumEquipmentSlot)* '}'))?
+	) '}'
+;
+
+SetContentsLootFunction:
+	id="set_contents" '{' (entries+=LootEntry)* '}'
+;
+
+SetCountLootFunction:
+	id="set_count" '(' count=Count ')'
+;
+
+Count:
+	ExactCount
+	| SpecialCount
+;
+
+ExactCount:
+	amount=ULONG
+;
+
+SpecialCount:
+	UniformCount
+	| BinomialCount
+;
+
+UniformCount:
+	"uniform" '(' (
+		"min" '=' min=ULONG ',' "max" '=' max=ULONG
+		|
+		"max" '=' max=ULONG ',' "min" '=' min=ULONG
+		|
+		(min=ULONG RANGE | min=ULONG_RANGE_START) max=ULONG
+	) ')'
+	|
+	"min" '=' min=ULONG ',' "max" '=' max=ULONG
+    |
+    "max" '=' max=ULONG ',' "min" '=' min=ULONG
+    |
+    (min=ULONG RANGE | min=ULONG_RANGE_START) max=ULONG
+;
+
+BinomialCount:
+	"binomial" '(' (
+		"n" '=' n=ULONG ',' "p" '=' p=PERCENTAGE
+		|
+		"p" '=' p=PERCENTAGE ',' "n" '=' n=ULONG
+		|
+		n=ULONG ',' p=PERCENTAGE
+	) ')'
+;
+
+SetDamageLootFunction:
+	id="set_damage" '(' damage=(PercentageRange | DoubleRange) ')'
+;
+
+SetLoreLootFunction:
+	id="set_lore" ('(' (
+		->(replaceDefined?="replace" '=') replace=BOOLEAN (',' "entity" '=' entity=EnumEntitySource)?
+		|
+        ("entity" '=')? entity=EnumEntitySource (',' replaceDefined?="replace" '=' replace=BOOLEAN)?
+	) ')')? '[' (lore+=TextComponent (',' lore+=TextComponent)*)? ']'
+;
+
+SetNameLootFunction:
+	id="set_name" '(' (
+		->("entity" '=' entity=EnumEntitySource) ',' "name" '=' itemName=TextComponent
+		|
+		("name" '=')? itemName=TextComponent (',' "entity" '=' entity=EnumEntitySource)?
+	) ')'
+;
+
+SetNBTLootFunction:
+	id="set_nbt" '(' tag=STRING ')'
+;
+
+SetStewEffectLootFunction:
+	id="set_stew_effect" '(' (effects+=StewEffect (',' effects+=StewEffect)*)? ')' 
+;
+
+StewEffect:
+	type=EffectID "for" duration=ULONG
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+LootCondition:
+	LootCondition2
+;
+
+LootCondition1 returns LootCondition:
+	LootCondition2 =>({AlternativeLootCondition.alternatives+=current} ('|' alternatives+=LootCondition2)+)?
+;
+
+LootCondition2 returns LootCondition:
+	'!' {InvertedLootCondition} term=LootCondition4
+	| "not" {InvertedLootCondition} term=LootCondition3
+	| LootCondition3
+;
+
+LootCondition3 returns LootCondition:
+	BlockStatePropertiesLootCondition
+	| DamageSourcePropertiesLootCondition
+	| EntityPropertiesLootCondition
+	| EntityScoresLootCondition
+	| KilledByPlayerLootCondition
+	| LocationCheckLootCondition
+	| MatchToolLootCondition
+	| RandomChanceLootCondition
+	| ReferenceLootCondition
+	| SurvivesExplosionLootCondition
+	| TableBonusLootCondition
+	| TimeCheckLootCondition
+	| ToolEnchantmentLootCondition
+	| WeatherCheckLootCondition
+	| '(' LootCondition1 ')'
+;
+
+LootCondition4 returns LootCondition:
+	DamageSourcePropertiesLootCondition
+	| EntityPropertiesLootCondition
+	| EntityScoresLootCondition
+	| KilledByPlayerLootCondition
+	| LocationCheckLootCondition
+	| MatchToolLootCondition1
+	| RandomChanceLootCondition
+	| ReferenceLootCondition
+	| SurvivesExplosionLootCondition
+	| TableBonusLootCondition
+	| ToolEnchantmentLootCondition
+	| '(' LootCondition1 ')'
+;
+
+BlockStatePropertiesLootCondition:
+    id="block" (inverted?='!=' | '=' | '==') block=NamespacedID ('[' (properties+=BlockStateProperty (',' properties+=BlockStateProperty)*)? ']')?	
+;
+
+BlockStateProperty:
+	name=BlockstateID '=' value=(Key | STRING)
+;
+
+DamageSourcePropertiesLootCondition:
+	id="damage_source" '(' (
+		DamageSourcePropertiesLootCondition_1
+		| DamageSourcePropertiesLootCondition_2
+		| DamageSourcePropertiesLootCondition_3
+		| DamageSourcePropertiesLootCondition_4
+		| DamageSourcePropertiesLootCondition_5
+		| DamageSourcePropertiesLootCondition_6
+		| DamageSourcePropertiesLootCondition_7
+		| DamageSourcePropertiesLootCondition_8
+		| DamageSourcePropertiesLootCondition_9
+		| DamageSourcePropertiesLootCondition_10
+	) ')'
+;
+
+fragment DamageSourcePropertiesLootCondition_1 returns DamageSourcePropertiesLootCondition:
+	(bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false")))
+	(
+		('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_2 returns DamageSourcePropertiesLootCondition:
+	(bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false")))
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_3 returns DamageSourcePropertiesLootCondition:
+	(bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false")))
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_4 returns DamageSourcePropertiesLootCondition:
+	"direct_entity" directEntity=EntityPredicate
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_5 returns DamageSourcePropertiesLootCondition:
+	(explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false")))
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_6 returns DamageSourcePropertiesLootCondition:
+	(fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false")))
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_7 returns DamageSourcePropertiesLootCondition:
+	(magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false")))
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_8 returns DamageSourcePropertiesLootCondition:
+	(projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false")))
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_9 returns DamageSourcePropertiesLootCondition:
+	(lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false")))
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' "source_entity" sourceEntity=EntityPredicate)?
+	)
+;
+
+fragment DamageSourcePropertiesLootCondition_10 returns DamageSourcePropertiesLootCondition:
+	"source_entity" sourceEntity=EntityPredicate
+	(
+		('&' (bypassesArmorDefined?='!' "bypasses_armor" | bypassesArmorDefined?="bypasses_armor" ('!=' (bypassesArmor?="false" | "true") | ('='|'==') (bypassesArmor?="true" | "false"))))?
+		& ('&' (bypassesInvulnerabilityDefined?='!' "bypasses_invulnerability" | bypassesInvulnerabilityDefined?="bypasses_invulnerability" ('!=' (bypassesInvulnerability?="false" | "true") | ('='|'==') (bypassesInvulnerability?="true" | "false"))))?
+		& ('&' (bypassesMagicDefined?='!' "bypasses_magic" | bypassesMagicDefined?="bypasses_magic" ('!=' (bypassesMagic?="false" | "true") | ('='|'==') (bypassesMagic?="true" | "false"))))?
+		& ('&' "direct_entity" directEntity=EntityPredicate)?
+		& ('&' (explosionDefined?='!' "is_explosion" | explosionDefined?="is_explosion" ('!=' (explosion?="false" | "true") | ('='|'==') (explosion?="true" | "false"))))?
+		& ('&' (fireDefined?='!' "is_fire" | fireDefined?="is_fire" ('!=' (fire?="false" | "true") | ('='|'==') (fire?="true" | "false"))))?
+		& ('&' (magicDefined?='!' "is_magic" | magicDefined?="is_magic" ('!=' (magic?="false" | "true") | ('='|'==') (magic?="true" | "false"))))?
+		& ('&' (projectileDefined?='!' "is_projectile" | projectileDefined?="is_projectile" ('!=' (projectile?="false" | "true") | ('='|'==') (projectile?="true" | "false"))))?
+		& ('&' (lightningDefined?='!' "is_lightning" | lightningDefined?="is_lightning" ('!=' (lightning?="false" | "true") | ('='|'==') (lightning?="true" | "false"))))?
+	)
+;
+
+EntityPropertiesLootCondition:
+	id="entity" '(' entity=EnumEntitySource ')' predicate=EntityPredicate
+;
+
+EntityScoresLootCondition:
+	id="entity_scores" '(' entity=EnumEntitySource ')' '{' (scores+=EntityScore)* '}'
+;
+
+EntityScore:
+	objective=(Key | STRING) ('='|'==') score=LongRange
+;
+
+KilledByPlayerLootCondition:
+	id="killed_by_player"
+;
+
+LocationCheckLootCondition:
+	id="location" ('(' (undefinedOffsetX?='~' | offsetX=LONG) (undefinedOffsetY?='~' | offsetY=LONG) (undefinedOffsetZ?='~' | offsetZ=LONG) ')')? predicate=LocationPredicate
+;
+
+MatchToolLootCondition:
+	id="tool" ((inverted?='!=' | '=' | '==') predicate=ItemPredicate1 | predicate=ItemPredicate2)
+;
+
+MatchToolLootCondition1 returns MatchToolLootCondition:
+	id="tool" predicate=ItemPredicate2
+;
+
+RandomChanceLootCondition:
+	id="random_chance" '(' chance=PERCENTAGE (lootingMultiplierDefined?='*' lootingMultiplier=NUMBER)? ')'
+;
+
+ReferenceLootCondition:
+	id="ref" ref=NamespacedLocation
+;
+
+SurvivesExplosionLootCondition:
+	id="survives_explosion"
+;
+
+TableBonusLootCondition:
+	id="table_bonus" '(' enchantment=EnchantmentID ')' '{' (chances+=PERCENTAGE)+ '}'
+;
+
+TimeCheckLootCondition returns LootCondition:
+	id="time" (periodDefined?='%' ("days" | period=ULONG))? (inverted?='!=' | '=' | '==') value=ULongRange 
+;
+
+ToolEnchantmentLootCondition:
+	id="enchantments" '{' (enchantments+=EnchantmentLevel)* '}'	
+;
+
+EnchantmentLevel:
+	enchantment=EnchantmentID ('='|'==') levels=ULongRange
+;
+
+WeatherCheckLootCondition:
+	id="weather" (inverted?='!=' | '=' | '==')
+    	(raining?="raining" ('+' thundering?="thundering")?
+    	| thundering?="thundering" =>('+' raining?="raining")?)
+;
+
+//CustomLootCondition:
+//	condition=NamespacedKey json=MCJsonObject
+//;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+EntityPredicate:
+	{EntityPredicate} '{' (
+		("distance" '{' (
+			("absolute" ('='|'==') absoluteDistance=DoubleRange)?
+			& ("horizontal" ('='|'==') horizontalDistance=DoubleRange)?
+			& ("x" ('='|'==') xDistance=DoubleRange)?
+			& ("y" ('='|'==') yDistance=DoubleRange)?
+			& ("z" ('='|'==') zDistance=DoubleRange)?
+		) '}')?
+		& (effectsDefined?="effects" '{' (effects+=EffectPredicate)* '}')?
+		& ("equipment" '{' (equipment+=EquipmentPredicate)* ("default" ('='|'==') defaultEquipment=ItemPredicate)? '}')?
+		& ("flags" '(' flags=EntityFlags ')')?
+		& ("nbt" ('='|'==') nbt=STRING)?
+		& ("player" player=PlayerPredicate)?
+		& ("team" ('='|'==') team=(Identifier | STRING))?
+		& ("type" ('='|'==') type=EntityID)?
+		& ("location" location=LocationPredicate)?
+		& ("fishing_hook" fishingHook=FishingHookPredicate)?
+	) '}'
+;
+
+FishingHookPredicate:
+	{FishingHookPredicate} '{' (
+		(inOpenWaterDefined?="in_open_water" ('='|'==') inOpenWater=BOOLEAN)?
+	) '}'
+;
+
+EffectPredicate:
+	id=EffectID ('{' (
+		("amplifier" '=' amplifier=ULongRange)?
+		& ("duration" '=' duration=ULongRange)?
+	) '}')?
+;
+
+EquipmentPredicate:
+	slots+=EnumEquipmentSlot (',' slots+=EnumEquipmentSlot)* (('='|'==') predicate=ItemPredicate1 | predicate=ItemPredicate2)
+;
+
+enum EnumEquipmentSlot:
+	MAINHAND="mainhand"
+	| OFFHAND="offhand"
+	| HEAD="head"
+	| CHEST="chest"
+	| LEGS="legs"
+	| FEET="feet"
+;
+
+EntityFlags:
+	EntityFlags_1
+	| EntityFlags_2
+	| EntityFlags_3
+	| EntityFlags_4
+	| EntityFlags_5
+;
+
+EntityFlags_1 returns EntityFlags:
+	(onFireDefined?='!' "is_on_fire" | onFireDefined?="is_on_fire" ('!=' (onFire?="false" | "true") | ('='|'==') (onFire?="true" | "false")))
+	(
+		('&' (sneakingDefined?='!' "is_sneaking" | sneakingDefined?="is_sneaking" ('!=' (sneaking?="false" | "true") | ('='|'==') (sneaking?="true" | "false"))))?
+		& ('&' (sprintingDefined?='!' "is_sprinting" | sprintingDefined?="is_sprinting" ('!=' (sprinting?="false" | "true") | ('='|'==') (sprinting?="true" | "false"))))?
+		& ('&' (swimmingDefined?='!' "is_swimming" | swimmingDefined?="is_swimming" ('!=' (swimming?="false" | "true") | ('='|'==') (swimming?="true" | "false"))))?
+		& ('&' (babyDefined?='!' "is_baby" | babyDefined?="is_baby" ('!=' (baby?="false" | "true") | ('='|'==') (baby?="true" | "false"))))?
+	)
+;
+
+EntityFlags_2 returns EntityFlags:
+	(sneakingDefined?='!' "is_sneaking" | sneakingDefined?="is_sneaking" ('!=' (sneaking?="false" | "true") | ('='|'==') (sneaking?="true" | "false")))
+	(
+		('&' (onFireDefined?='!' "is_on_fire" | onFireDefined?="is_on_fire" ('!=' (onFire?="false" | "true") | ('='|'==') (onFire?="true" | "false"))))?
+		& ('&' (sprintingDefined?='!' "is_sprinting" | sprintingDefined?="is_sprinting" ('!=' (sprinting?="false" | "true") | ('='|'==') (sprinting?="true" | "false"))))?
+		& ('&' (swimmingDefined?='!' "is_swimming" | swimmingDefined?="is_swimming" ('!=' (swimming?="false" | "true") | ('='|'==') (swimming?="true" | "false"))))?
+		& ('&' (babyDefined?='!' "is_baby" | babyDefined?="is_baby" ('!=' (baby?="false" | "true") | ('='|'==') (baby?="true" | "false"))))?
+	)
+;
+
+EntityFlags_3 returns EntityFlags:
+	(sprintingDefined?='!' "is_sprinting" | sprintingDefined?="is_sprinting" ('!=' (sprinting?="false" | "true") | ('='|'==') (sprinting?="true" | "false")))
+	(
+		('&' (onFireDefined?='!' "is_on_fire" | onFireDefined?="is_on_fire" ('!=' (onFire?="false" | "true") | ('='|'==') (onFire?="true" | "false"))))?
+		& ('&' (sneakingDefined?='!' "is_sneaking" | sneakingDefined?="is_sneaking" ('!=' (sneaking?="false" | "true") | ('='|'==') (sneaking?="true" | "false"))))?
+		& ('&' (swimmingDefined?='!' "is_swimming" | swimmingDefined?="is_swimming" ('!=' (swimming?="false" | "true") | ('='|'==') (swimming?="true" | "false"))))?
+		& ('&' (babyDefined?='!' "is_baby" | babyDefined?="is_baby" ('!=' (baby?="false" | "true") | ('='|'==') (baby?="true" | "false"))))?
+	)
+;
+
+EntityFlags_4 returns EntityFlags:
+	(swimmingDefined?='!' "is_swimming" | swimmingDefined?="is_swimming" ('!=' (swimming?="false" | "true") | ('='|'==') (swimming?="true" | "false")))
+	(
+		('&' (onFireDefined?='!' "is_on_fire" | onFireDefined?="is_on_fire" ('!=' (onFire?="false" | "true") | ('='|'==') (onFire?="true" | "false"))))?
+		& ('&' (sneakingDefined?='!' "is_sneaking" | sneakingDefined?="is_sneaking" ('!=' (sneaking?="false" | "true") | ('='|'==') (sneaking?="true" | "false"))))?
+		& ('&' (sprintingDefined?='!' "is_sprinting" | sprintingDefined?="is_sprinting" ('!=' (sprinting?="false" | "true") | ('='|'==') (sprinting?="true" | "false"))))?
+		& ('&' (babyDefined?='!' "is_baby" | babyDefined?="is_baby" ('!=' (baby?="false" | "true") | ('='|'==') (baby?="true" | "false"))))?
+	)
+;
+
+EntityFlags_5 returns EntityFlags:
+	(babyDefined?='!' "is_baby" | babyDefined?="is_baby" ('!=' (baby?="false" | "true") | ('='|'==') (baby?="true" | "false")))
+	(
+		('&' (onFireDefined?='!' "is_on_fire" | onFireDefined?="is_on_fire" ('!=' (onFire?="false" | "true") | ('='|'==') (onFire?="true" | "false"))))?
+		& ('&' (sneakingDefined?='!' "is_sneaking" | sneakingDefined?="is_sneaking" ('!=' (sneaking?="false" | "true") | ('='|'==') (sneaking?="true" | "false"))))?
+		& ('&' (sprintingDefined?='!' "is_sprinting" | sprintingDefined?="is_sprinting" ('!=' (sprinting?="false" | "true") | ('='|'==') (sprinting?="true" | "false"))))?
+		& ('&' (swimmingDefined?='!' "is_swimming" | swimmingDefined?="is_swimming" ('!=' (swimming?="false" | "true") | ('='|'==') (swimming?="true" | "false"))))?
+	)
+;
+
+PlayerPredicate:
+	{PlayerPredicate} '{' (
+		(advancementsDefined?="advancements" '{' (advancements+=AdvancementPredicate)* '}')?
+		& (gamemodeDefined?="gamemode" '=' gamemode=EnumGamemode)?
+		& (recipesDefined?="recipes" '{' (recipes+=RecipePredicate)* '}')?
+		& (statsDefined?="stats" '{' (stats+=StatisticPredicate)* '}')?
+	) '}'
+;
+
+AdvancementPredicate:
+	name=NamespacedLocation (
+		'=' (didNotGet?="false" | "true")
+		|
+		'{' (criteria+=AdvancementCriteria)* '}'
+	)?
+;
+
+AdvancementCriteria:
+	criteriaNames+=Key (',' criteriaNames+=Key)* '=' (didNotGet?="false" | "true")
+;
+
+enum EnumGamemode:
+	SURVIVAL="survival"
+	| CREATIVE="creative"
+	| ADVENTURE="adventure"
+	| SPECTATOR = "spectator"
+;
+
+RecipePredicate:
+	recipe=NamespacedLocation ('=' (didNotGet?="false" | "true"))?
+;
+
+StatisticPredicate:
+	SingleStatisticPredicate
+	| NamespacedStatisticPredicate
+;
+
+SingleStatisticPredicate:
+	type=NamespacedID stat=NamespacedID '=' value=LongRange
+;
+
+NamespacedStatisticPredicate:
+	type=NamespacedID '{' (stats+=UnnamespacedStatisticPredicate)* '}'
+;
+
+UnnamespacedStatisticPredicate:
+	stat=NamespacedID '=' value=LongRange
+;
+
+LocationPredicate:
+	{LocationPredicate} '{' (
+		("biome" ('='|'==') biome=BiomeID)?
+		& ("block" (block=BlockPredicate2 | ('='|'==') block=BlockPredicate1))?
+		& ("dimension" ('='|'==') dimension=DimensionID)?
+		& ("feature" ('='|'==') feature=Feature)?
+		& ("fluid" (fluid=FluidPredicate2 | ('='|'==') fluid=FluidPredicate1))?
+		& ("light" ('='|'==') light=ULongRange)?
+		& ("position" '{' (
+			("x" ('='|'==') xPos=DoubleRange)?
+			& ("y" ('='|'==') yPos=DoubleRange)?
+			& ("z" ('='|'==') zPos=DoubleRange)?
+		) '}')?
+	) '}'
+;
+
+ItemPredicate: ItemPredicate1 | ItemPredicate2;
+
+ItemPredicate1 returns ItemPredicate:
+	ItemName ItemValues
+;
+
+ItemPredicate2 returns ItemPredicate:
+	ItemValues
+;
+
+fragment ItemName returns ItemPredicate hidden():
+	('#' tag=NamespacedLocation | item=ItemID)
+;
+
+fragment ItemValues returns ItemPredicate:
+	'{' (
+        ("count" ('='|'==') count=ULongRange)?
+        & ("durability" ('='|'==') durability=ULongRange)?
+        & (enchantmentsDefined?="enchantments" '{' (enchantments+=EnchantmentLevel)* '}')?
+        & (storedEnchantmentsDefined?="stored_enchantments" '{' (storedEnchantments+=EnchantmentLevel)* '}')?
+        & ("nbt" ('='|'==') nbt=STRING)?
+        & ("potion" ('='|'==') potion=PotionID)?
+    ) '}'
+;
+
+BlockPredicate: BlockPredicate1 | BlockPredicate2;
+
+BlockPredicate1 returns BlockPredicate:
+	BlockName BlockValues?
+;
+
+BlockPredicate2 returns BlockPredicate:
+	BlockValues
+;
+
+fragment BlockName returns BlockPredicate hidden():
+	('#' tag=NamespacedLocation | block=NamespacedID)
+;
+
+fragment BlockValues returns BlockPredicate:
+	'{' (
+        ("nbt" ('='|'==') nbt=STRING)?
+        & (stateDefined?="state" '{' (properties+=BlockStatePropertyPredicate)* '}')?
+    ) '}'
+;
+
+BlockStatePropertyPredicate:
+    name=Key ('='|'==') (value=BlockstateValue | valueRange=NormalLongRange)
+;
+
+BlockstateValue:
+	STRING | Identifier | LONG
+;
+
+FluidPredicate: FluidPredicate1 | FluidPredicate2;
+
+FluidPredicate1 returns FluidPredicate:
+	FluidName FluidValues?
+;
+
+FluidPredicate2 returns FluidPredicate:
+	FluidValues
+;
+
+fragment FluidName returns FluidPredicate hidden():
+	('#' tag=NamespacedLocation | fluid=NamespacedID)
+;
+
+fragment FluidValues returns FluidPredicate:
+	'{' (
+		(stateDefined?="state" '{' (properties+=BlockStatePropertyPredicate)* '}')?
+	) '}'
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//LootTableType:
+//    "generic"
+//    | "block"
+//    | "entity"
+//    | "chest"
+//    | "fishing"
+//    | "gift"
+//    | "advancement_reward"
+//    | "barter"
+//    | "empty"
+//    NamespacedID
+//;
+
+enum EnumLootTableType:
+	GENERIC="generic"
+	| BLOCK="block"
+	| ENTITY="entity"
+	| CHEST="chest"
+	| FISHING="fishing"
+	| GIFT="gift"
+	| ADVANCEMENT_REWARD="advancement_reward"
+	| BARTER="barter"
+	| EMPTY="empty"
+;
+
+enum EnumBonusFormula:
+    BINOMIAL_WITH_BONUS_COUNT="binomial_with_bonus_count"
+    | UNIFORM_BONUS_COUNT="uniform_bonus_count"
+    | ORE_DROPS="ore_drops"
+;
+
+enum EnumNBTSource:
+    BLOCK_ENTITY="block_entity"
+    | THIS="this"
+    | KILLER="killer"
+    | KILLER_PLAYER="killer_player"
+;
+
+AttributeModifierType:
+	"generic.max_health"
+	| "generic.follow_range"
+	| "generic.knockback_resistance"
+	| "generic.movement_speed"
+	| "generic.attack_damage"
+	| "generic.armor"
+	| "generic.armor_toughness"
+	| "generic.attack_knockback"
+	| "generic.attack_speed"
+	| "generic.luck"
+	| "horse.jump_strength"
+	| "generic.flying_speed"
+	| "zombie.spawn_reinforcements"
+;
+
+enum EnumAttributeModifierOperation:
+    ADDITION="addition"
+    | MULTIPLY_BASE="multiply_base"
+    | MULTIPLY_TOTAL="multiply_total"
+;
+
+enum EnumEntitySource:
+    THIS="this"
+    | KILLER="killer"
+    | KILLER_PLAYER="killer_player"
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+EnchantmentID:
+    NamespacedID
+;
+
+BlockstateID:
+	Key
+;
+
+EntityID:
+	NamespacedID
+;
+
+EffectID:
+	NamespacedID
+;
+
+BiomeID:
+	NamespacedID
+;
+
+DimensionID:
+	NamespacedID
+;
+
+Feature:
+	Identifier
+;
+
+BlockID:
+	NamespacedID
+;
+
+ItemID:
+	NamespacedID
+;
+
+PotionID:
+	NamespacedID
+;
+
+TextComponent returns MCJsonValue:
+	MCJsonValue
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MCJsonValue:
+	MCJsonObject
+	| MCJsonArray
+	| MCJsonString
+	| MCJsonNumber
+	| MCJsonBoolean
+	| MCJsonNull
+;
+
+MCJsonObject:
+	'{' {MCJsonObject}
+		(entries+=MCJsonEntry (',' entries+=MCJsonEntry)* ','?)?
+	'}'
+;
+
+MCJsonEntry:
+	name=STRING ':' value=MCJsonValue
+;
+
+MCJsonArray:
+	'[' {MCJsonArray}
+		(elements+=MCJsonValue (',' elements+=MCJsonValue)* ','?)?
+	']'
+;
+
+MCJsonString:
+	value=STRING
+;
+
+MCJsonNumber:
+	MCJsonIntegral
+	| MCJsonFloatingPoint
+;
+
+MCJsonIntegral:
+	value=LONG
+;
+
+MCJsonFloatingPoint:
+	value=DOUBLE
+;
+
+MCJsonBoolean:
+	(value?="true" | "false" {MCJsonBoolean})	
+;
+
+MCJsonNull:
+	"null" {MCJsonNull}
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NBTPath hidden():
+    NBTPathNode ('.' NBTPathNode)*
+;
+
+NBTPathNode:
+	IndexedNBTPathNode
+    | AllOfNBTPathNode
+	| NamedNBTPathNode
+;
+
+IndexedNBTPathNode hidden():
+    NamedNBTPathNode '[' WS? LONG WS? ']'	
+;
+
+AllOfNBTPathNode hidden():
+	NamedNBTPathNode '[' WS? ']'
+;
+
+NamedNBTPathNode:
+    STRING | Identifier
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//NBTBase hidden():
+//    NBTByte
+//    | NBTShort
+//    | NBTInt
+//    | NBTLong
+//    | NBTFloat
+//    | NBTDouble
+//    | NBTByteArray
+//    | NBTString
+//    | NBTList
+//    | NBTCompound
+//    | NBTIntArray
+//    | NBTLongArray
+//;
+//
+//NBTByte hidden():
+//	value=LONG ('b'|'B')
+//;
+//
+//NBTCompound hidden():
+//	{NBTCompound} '{' WS? (entries+=NBTCompoundEntry WS? (',' WS? entries+=NBTCompoundEntry WS?)* (',' WS?)?)? '}' 
+//;
+//
+//NBTCompoundEntry:
+//	name=NBTStringValue WS? ':' WS? value=NBTBase
+//;
+//
+NBTStringValue:
+	STRING | Key
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NamespacedID hidden():
+	Key ->(':' Key)?
+;
+	
+NamespacedLocation hidden():
+	Key ->(':' Key)? ->('/' Key)* 
+;
+
+Key hidden(): (Identifier | AttributeModifierType) ('.' (Identifier | AttributeModifierType))*;
+
+Identifier hidden(): ID | Keyword;
+
+Keyword:
+    "A" | "B" | "E" | "F" | "Z" | "_" | "a" | "absolute" | "addition" | "advancement_reward" | "advancements" | "adventure" |
+    "alternatives" | "amount" | "amplifier" | "append" | "apply_bonus" | "b" | "barter" | "binomial" |
+    "binomial_with_bonus_count" | "biome" | "block" | "block_entity" | "bonusMultiplier" | "bonus_rolls" | "bypasses_armor" |
+    "bypasses_invulnerability" | "bypasses_magic" | "chest" | "children" | "conditions" | "contents" | "copy_name" |
+    "copy_nbt" | "copy_state" | "count" | "creative" | "d" | "damage_source" | "days" | "decoration" | "default" |
+    "destination" | "dimension" | "direct_entity" | "distance" | "durability" | "duration" | "dynamic" | "e" | "effects" |
+    "empty" | "enchant_randomly" | "enchant_with_levels" | "enchantment" | "enchantments" | "entity" | "entity_scores" |
+    "entries" | "equipment" | "expand" | "exploration_map" | "explosion_decay" | "extra" | "f" | "false" | "feature" | "feet" |
+    "fill_player_head" | "fishing" | "fishing_hook" | "flags" | "fluid" | "for" | "formula" | "functions" | "furnace_smelt" |
+    "g" | "gamemode" | "generic" | "gift" | "group" | "head" | "horizontal" | "id" | "if" | "in_open_water" | "into" |
+    "is_baby" | "is_explosion" | "is_fire" | "is_lightning" | "is_magic" | "is_on_fire" | "is_projectile" | "is_sneaking" |
+    "is_sprinting" | "is_swimming" | "item" | "killed_by_player" | "killer" | "killer_player" | "l" | "legs" | "levels" |
+    "light" | "limit" | "location" | "loot_table" | "looting_enchant" | "mainhand" | "max" | "merge" | "min" |
+    "multiply_base" | "multiply_total" | "n" | "name" | "nbt" | "not" | "null" | "offhand" | "operation" | "ore_drops" | "p" |
+    "player" | "pools" | "position" | "potion" | "probability" | "q" | "quality" | "r" | "raining" | "random_chance" |
+    "recipes" | "ref" | "replace" | "rolls" | "s" | "search_radius" | "self" | "sequence" | "set_attributes" | "set_contents" |
+    "set_count" | "set_damage" | "set_lore" | "set_name" | "set_nbt" | "set_stew_effect" | "skip_existing_chunks" | "slot" |
+    "source_entity" | "spectator" | "state" | "stats" | "stored_enchantments" | "survival" | "survives_explosion" | "t" |
+    "table_bonus" | "tag" | "team" | "this" | "thundering" | "time" | "to" | "tool" | "treasure" | "true" | "type" | "u" |
+    "uniform" | "uniform_bonus_count" | "v" | "weather" | "with" | "x" | "y" | "z" | "zoom"
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ULongRange returns LongRange:
+    NormalULongRange
+    | ExactULongRange
+;
+
+ExactULongRange returns ExactLongRange:
+    value=ULONG
+;
+
+NormalULongRange returns NormalLongRange:
+    (min=ULONG RANGE | min=ULONG_RANGE_START) max=ULONG?
+    | RANGE max=ULONG
+;
+
+LongRange:
+    NormalLongRange
+    | ExactLongRange
+;
+
+ExactLongRange:
+    value=LONG
+;
+
+NormalLongRange:
+    (min=LONG RANGE | min=ULONG_RANGE_START | min=SLONG_RANGE_START) max=LONG?
+    | RANGE max=LONG
+;
+
+DoubleRange:
+    NormalDoubleRange
+    | ExactDoubleRange
+;
+
+ExactDoubleRange:
+    value=NUMBER
+;
+
+NormalDoubleRange:
+    (min=NUMBER RANGE | min=NUMBER_RANGE_START) max=NUMBER?
+    | RANGE max=NUMBER
+;
+
+NUMBER_RANGE_START returns ecore::EDouble:
+	 ULONG_RANGE_START | SLONG_RANGE_START
+;
+
+PercentageRange returns DoubleRange:
+    NormalPercentageRange
+    | ExactPercentageRange
+;
+
+ExactPercentageRange returns ExactDoubleRange:
+    value=PERCENTAGE
+;
+
+NormalPercentageRange returns NormalDoubleRange:
+    min=PERCENTAGE RANGE max=PERCENTAGE?
+    | RANGE max=PERCENTAGE
+;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+LONG returns ecore::ELong: ULONG | SLONG;
+
+NUMBER returns ecore::EDouble: LONG | DOUBLE;
+
+BOOLEAN returns ecore::EBoolean: "true" | "false";
+
+terminal RANGE: '..';
+
+terminal fragment HEX: 'a'..'f'|'A'..'F'|'0'..'9';
+terminal fragment HEX4: HEX HEX HEX HEX;
+terminal fragment HEX8: HEX4 HEX4;
+terminal fragment HEX12: HEX8 HEX4;
+terminal UUID: HEX8 '-' HEX4 '-' HEX4 '-' HEX4 '-' HEX12;
+
+terminal fragment SIGN: '+'|'-';
+terminal fragment DIGITS: ('0'..'9')+;
+terminal fragment EXPONENT: ('e'|'E') SIGN? DIGITS;
+
+terminal ULONG_RANGE_START returns ecore::ELong: ULONG '..';
+terminal SLONG_RANGE_START returns ecore::ELong: SLONG '..';
+
+terminal PERCENTAGE returns ecore::EDouble: ('.' DIGITS | DIGITS ('.' DIGITS?)?) '%';
+terminal DOUBLE returns ecore::EDouble: '-'? ('.' DIGITS EXPONENT? | DIGITS ('.' DIGITS EXPONENT? | EXPONENT));
+terminal ULONG returns ecore::ELong: DIGITS;
+terminal SLONG returns ecore::ELong: '-' DIGITS;
+
+terminal STRING:
+	'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"'
+	| "'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
+;
+terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+//terminal ID:
+//	't' (
+//		'r' (
+//			'u' (
+//				'e' ID_REST
+//				| (('a'..'d'|'f'..'z'|'A'..'Z'|'_'|'0'..'9') ID_REST?)?
+//			)
+//			| (('a'..'t'|'v'..'z'|'A'..'Z'|'_'|'0'..'9') ID_REST?)?
+//		)
+//		| (('a'..'q'|'s'..'z'|'A'..'Z'|'_'|'0'..'9') ID_REST?)?
+//	)
+//	| 'f' (
+//		'a' (
+//			'l' (
+//				's' (
+//					'e' ID_REST
+//					| (('a'..'d'|'f'..'z'|'A'..'Z'|'_'|'0'..'9') ID_REST?)?
+//				)
+//			)
+//		)
+//	)
+//	| ('a'..'e'|'g'..'s'|'u'..'z'|'A'..'Z'|'_'|'0'..'9') ID_REST?
+//;
+//terminal fragment ID_REST: ('a'..'z'|'A'..'Z'|'_'|'0'..'9')+;
+
+//terminal BOOLEAN returns ecore::EBoolean: "true" | "false";
+
+terminal ML_COMMENT: '/*' -> '*/';
+terminal SL_COMMENT: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS: (' '|'\t'|'\r'|'\n')+;
+
+terminal ANY_OTHER: .;

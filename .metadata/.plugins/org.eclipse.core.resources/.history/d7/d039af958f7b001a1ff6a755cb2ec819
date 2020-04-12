@@ -1,0 +1,7 @@
+package com.raptor.mcloottable.mcloot.impl
+
+class MclootFactoryImpl2 extends MclootFactoryImpl {
+    
+    
+    
+}

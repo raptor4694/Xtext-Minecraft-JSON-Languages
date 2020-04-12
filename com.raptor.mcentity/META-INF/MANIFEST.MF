@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: com.raptor.mcentity
+Bundle-ManifestVersion: 2
+Bundle-Name: com.raptor.mcentity
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: com.raptor.mcentity; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.eclipse.xtend.lib;bundle-version="2.14.0",
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: com.raptor.mcentity.mcentity,
+ com.raptor.mcentity.mcentity.util,
+ com.raptor.mcentity.validation,
+ com.raptor.mcentity.serializer,
+ com.raptor.mcentity.services,
+ com.raptor.mcentity.mcentity.impl,
+ com.raptor.mcentity.scoping,
+ com.raptor.mcentity,
+ com.raptor.mcentity.generator,
+ com.raptor.mcentity.parser.antlr,
+ com.raptor.mcentity.parser.antlr.internal
+Import-Package: org.apache.log4j

@@ -1,0 +1,13 @@
+package com.raptor.mcloottable.tests
+
+class GenerateMinecraftDataFiles {
+    
+    static val DIR = '''C:\Users\flyin\Documents\Xtext\com.raptor.mcloot\src\com\raptor\mcloottable\util\'''
+    
+    def static void main(String[] args) {
+        
+        
+        
+    }
+    
+}

@@ -1,0 +1,16 @@
+nether_fossil
+jungle_pyramid
+monument
+desert_pyramid
+mineshaft
+ocean_ruin
+shipwreck
+fortress
+buried_treasure
+pillager_outpost
+swamp_hut
+igloo
+endcity
+village
+stronghold
+mansion

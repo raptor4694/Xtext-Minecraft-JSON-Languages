@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+<typeInfo handle="=com.raptor.mcblockstate/C:\/Users\/flyin\/.p2\/pool\/plugins\/org.eclipse.xtext_2.21.0.v20200302-1141.jar&lt;org.eclipse.xtext.common.services(DefaultTerminalConverters.class[DefaultTerminalConverters" modifiers="33" timestamp="1584489948032"/>
+<typeInfo handle="=com.raptor.mcmodel.ui/C:\/Users\/flyin\/.p2\/pool\/plugins\/org.eclipse.xtext.ui_2.21.0.v20200302-1241.jar&lt;org.eclipse.xtext.ui.editor.syntaxcoloring(DefaultAntlrTokenToAttributeIdMapper.class[DefaultAntlrTokenToAttributeIdMapper" modifiers="33" timestamp="1584489950848"/>
+<typeInfo handle="=com.raptor.mcmodel.ui/C:\/Users\/flyin\/.p2\/pool\/plugins\/org.eclipse.xtext.ui_2.21.0.v20200302-1241.jar&lt;org.eclipse.xtext.ui.editor.syntaxcoloring(DefaultHighlightingConfiguration.class[DefaultHighlightingConfiguration" modifiers="33" timestamp="1584489950848"/>
+<typeInfo handle="=com.raptor.mcblockstate.ide/C:\/Users\/flyin\/.p2\/pool\/plugins\/org.eclipse.xtext.ide_2.21.0.v20200302-1141.jar&lt;org.eclipse.xtext.ide.editor.syntaxcoloring(DefaultAntlrTokenToAttributeIdMapper.class[DefaultAntlrTokenToAttributeIdMapper" modifiers="33" timestamp="1584489948295"/>
+<typeInfo handle="=com.raptor.mcblockstate.ide/C:\/Users\/flyin\/.p2\/pool\/plugins\/org.eclipse.xtext.ide_2.21.0.v20200302-1141.jar&lt;org.eclipse.xtext.ide.editor.syntaxcoloring(DefaultSemanticHighlightingCalculator.class[DefaultSemanticHighlightingCalculator" modifiers="33" timestamp="1584489948295"/>
+<typeInfo handle="=com.raptor.mcblockstate/C:\/Users\/flyin\/.p2\/pool\/plugins\/org.eclipse.xtext_2.21.0.v20200302-1141.jar&lt;org.eclipse.xtext.conversion.impl(INTValueConverter.class[INTValueConverter" modifiers="33" timestamp="1584489948032"/>
+</typeInfoHistroy>

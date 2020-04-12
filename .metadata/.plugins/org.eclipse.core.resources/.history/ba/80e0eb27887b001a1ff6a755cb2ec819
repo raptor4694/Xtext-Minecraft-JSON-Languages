@@ -1,0 +1,71 @@
+package com.raptor.mcloottable.tests
+
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
+import java.util.Map
+import java.util.Set
+import com.raptor.mcloottable.util.Property
+import com.raptor.mcloottable.util.IntProperty
+import com.raptor.mcloottable.util.BooleanProperty
+import com.raptor.mcloottable.util.EnumProperty
+import com.raptor.mcloottable.util.MinecraftData.Properties
+
+import static com.raptor.mcloottable.util.MinecraftData.*
+
+class GenerateMinecraftDataFiles {
+    
+    static val DIR = Paths.get('''C:\Users\flyin\Documents\Xtext\com.raptor.mcloot\src\com\raptor\mcloottable\util\''')
+    
+    def static void main(String[] args) {
+        
+        
+        
+    }
+    
+    def generateBlockStates(Map<String, Map<String, ? extends Property>> data, String outputFileName) {
+        Files.write(DIR.resolve(outputFileName), data.entrySet.map[
+            '''
+            «key»
+                «FOR e : value.entrySet»
+                    «e.key»=«switch value : e.value {
+                        case Properties.HORIZONTAL_FACES: "#HORIZONTAL_FACES"
+                        case Properties.ALL_FACES: "#ALL_FACES"
+                        case Properties.BLOCK_HALF: "#BLOCK_HALF"
+                        case Properties.DOOR_HALF: "#DOOR_HALF"
+                        case Properties.BUTTON_FACE: "#BUTTON_FACE"
+                        case Properties.INT16: "#INT16"
+                        case Properties.STAIR_SHAPE: "#STAIR_SHAPE"
+                        case Properties.SLAB_TYPE: "#SLAB_TYPE"
+                        case Properties.AXIS: "#AXIS"
+                        case Properties.WALL_TYPE: "#WALL_TYPE"
+                        case Properties.BED_HALF: "#BED_HALF"
+                        case Properties.RAIL_ORIENTATION: "#RAIL_ORIENTATION"
+                        case Properties.CHEST_SHAPE: "#CHEST_SHAPE"
+                        case Properties.PISTON_STATUS: "#PISTON_STATUS"
+                        case Properties.REDSTONE_WIRE_DIRECTION: "#REDSTONE_WIRE_DIRECTION"
+                        case BooleanProperty.INSTANCE: "#BOOLEAN"
+                        IntProperty: '''#«value.min»..«value.max»'''
+                        EnumProperty: value.options.join(" ")
+                    }»
+                «ENDFOR»
+            '''
+        ])
+    }
+    
+    def generate(Map<String, Set<String>> elements, String outputFileName) {
+        Files.write(DIR.resolve(outputFileName), elements.entrySet.map[
+            '''
+            «key»
+                «FOR v : value»
+                    «v»
+                «ENDFOR»
+            '''
+        ])
+    }
+    
+    def generate(Set<String> elements, String outputFileName) {
+        Files.write(DIR.resolve(outputFileName), elements, StandardOpenOption.TRUNCATE_EXISTING)
+    }
+    
+}

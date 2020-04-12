@@ -1,0 +1,5 @@
+package com.raptor.mcloottable.mcloot.impl
+
+class EntityFlagsImpl2 extends EntityFlagsImpl {
+    
+}
