@@ -1,9 +1,0 @@
-package com.raptor.mcloottable.tests
-
-class GenerateMinecraftDataFiles {
-    
-    def static void main(String[] args) {
-        
-    }
-    
-}
